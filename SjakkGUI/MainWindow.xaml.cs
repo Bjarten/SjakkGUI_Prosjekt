@@ -32,6 +32,7 @@ namespace SjakkGUI
           
 
             InitializeComponent();
+            // HENRIK
         }
 
         private void btnSend_Click(object sender, RoutedEventArgs e)
