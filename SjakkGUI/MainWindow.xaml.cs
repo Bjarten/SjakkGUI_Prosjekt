@@ -37,14 +37,10 @@ namespace SjakkGUI
             traad.Start();
             minSjakkMotor = new UCI();
             minSjakkMotor.InitEngine(motorSti,"");
+            minSjakkMotor.Depth = "20";
 
 
             // start new game
-
-            string bestMove = string.Empty;
-            string considering = string.Empty;
-            string trekk = string.Empty;
-
             InitializeComponent();
         }
 
@@ -63,27 +59,17 @@ namespace SjakkGUI
 
                   this.Dispatcher.Invoke((Action)(() =>
                             {
-                                minSjakkMotor.EngineCommand("position startpos moves " + tbConsole.Text);
+                                minSjakkMotor.EngineCommandMove(tbNextMove.Text);
                         }));
 
-                minSjakkMotor.EngineCommand("go");
-
-                minSjakkMotor.ewh.WaitOne();
+                // Venter på kalkulasjoner
+                minSjakkMotor.ewhCalculating.WaitOne();
 
                     this.Dispatcher.Invoke((Action)(() =>
                     {
-                        minSjakkMotor.Trekk = tbConsole.Text;
-
-                        tbConsole.Text = minSjakkMotor.Trekk + " " + minSjakkMotor.BestMove;
+                        tbConsole.Clear();
+                        tbConsole.Text = "Tidligere trekk: " + minSjakkMotor.EarlierMoves + "\n" + "Beste trekk: "+ minSjakkMotor.BestMove;
                     }));
-
-                    //   tbConsole.Text += "Beste trekk: " + minSjakkMotor.BestMove;
-
-                    minSjakkMotor.Considering = string.Empty;
-                    minSjakkMotor.Ferdig = false;
-                
-                //  tbConsol.Text = minSjakkMotor.GetEngineOutput();
-
             }
         }
     }

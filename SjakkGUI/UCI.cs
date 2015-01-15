@@ -11,17 +11,33 @@ namespace SjakkGUI
    
     public class UCI
     {
-        public EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.AutoReset);
+        /// <summary>
+        /// Gets set when the best move is found
+        /// </summary>
+        public EventWaitHandle ewhCalculating = new EventWaitHandle(false, EventResetMode.AutoReset);
         string bestMove = string.Empty;
         string considering = string.Empty;
-        bool ferdig = false;
-        string trekk = string.Empty;
+        string lastMove = string.Empty;
+        string depth = "20";
+        string earlierMoves = String.Empty;
 
-
-        public string Trekk
+        public string EarlierMoves
         {
-            get { return trekk; }
-            set { trekk = value; }
+            get { return earlierMoves; }
+            set { earlierMoves = value; }
+        }
+
+        public string Depth
+        {
+            get { return depth; }
+            set { depth = value; }
+        }
+
+
+        public string LastMove
+        {
+            get { return lastMove; }
+            set { lastMove = value; }
         }
 
 
@@ -32,11 +48,6 @@ namespace SjakkGUI
             set { considering = value; }
         }
 
-        public Boolean Ferdig
-        {
-            get { return ferdig; }
-            set { ferdig = value; }
-        } 
 
         public String BestMove
         {
@@ -54,6 +65,8 @@ namespace SjakkGUI
         static String kSetPosition = "position ";
         static String kStartPosition = "startpos ";
         static String kStartMoves = "moves ";
+        static String kGo = "go ";
+        static String kDepth = "depth ";
         static String kStartMovesFromStartPos = kSetPosition + kStartPosition + kStartMoves;
 
         //////////////////////////////////////////////////////////////////////////
@@ -151,7 +164,7 @@ namespace SjakkGUI
             {
                 String bestmove = t.Substring(9, 4);
                 this.BestMove = t.Substring(9, 4);
-                ewh.Set();
+                ewhCalculating.Set();
             }
             else if (t.Contains(" pv "))
             {
@@ -253,6 +266,18 @@ namespace SjakkGUI
         {
             if (UCI_Engine != null)
                 UCI_Engine.StandardInput.WriteLine(cmd);
+        }
+
+        public void EngineCommandMove(String nextMove)
+        {
+            if (UCI_Engine != null)
+            {
+                this.lastMove = nextMove;
+                UCI_Engine.StandardInput.WriteLine(kStartMovesFromStartPos + this.earlierMoves + nextMove);
+                UCI_Engine.StandardInput.WriteLine(kGo + kDepth + this.depth);
+                if(nextMove != "")
+                this.earlierMoves += nextMove + " ";
+            }
         }
 
         public string GetEngineOutput()
