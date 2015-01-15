@@ -4,11 +4,46 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Threading;
 
 namespace SjakkGUI
 {
+   
     public class UCI
     {
+        public EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.AutoReset);
+        string bestMove = string.Empty;
+        string considering = string.Empty;
+        bool ferdig = false;
+        string trekk = string.Empty;
+
+
+        public string Trekk
+        {
+            get { return trekk; }
+            set { trekk = value; }
+        }
+
+
+
+        public string Considering
+        {
+            get { return considering; }
+            set { considering = value; }
+        }
+
+        public Boolean Ferdig
+        {
+            get { return ferdig; }
+            set { ferdig = value; }
+        } 
+
+        public String BestMove
+        {
+            get { return bestMove; }
+            set { bestMove = value; }
+        }
+
         //////////////////////////////////////////////////////////////////////////
         // CONSTANTS
         //////////////////////////////////////////////////////////////////////////
@@ -31,14 +66,17 @@ namespace SjakkGUI
         //////////////////////////////////////////////////////////////////////////
         #region Public methods
 
+
         public bool InitEngine(String enginePath, String engineIniPath)
         {
             // create process
+          
+
             UCI_Engine = new Process();
             UCI_Engine.StartInfo.FileName = enginePath;
             UCI_Engine.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(enginePath);
             UCI_Engine.StartInfo.UseShellExecute = false;
-            UCI_Engine.StartInfo.CreateNoWindow = false;
+            UCI_Engine.StartInfo.CreateNoWindow = true;
             UCI_Engine.StartInfo.RedirectStandardInput = true;
             UCI_Engine.StartInfo.RedirectStandardOutput = true;
             UCI_Engine.Start();
@@ -102,25 +140,28 @@ namespace SjakkGUI
         //////////////////////////////////////////////////////////////////////////
         #region Private methods
 
-        private static void OutputDataReceivedProc(object sendingProcess, DataReceivedEventArgs outLine)
+        private void OutputDataReceivedProc(object sendingProcess, DataReceivedEventArgs outLine)
         {
             if (outLine.Data == null)
                 return;
 
             String t = outLine.Data;
+
             if (t.Contains("bestmove"))
             {
                 String bestmove = t.Substring(9, 4);
-                Console.WriteLine("Best move: " + bestmove);
+                this.BestMove = t.Substring(9, 4);
+                ewh.Set();
             }
             else if (t.Contains(" pv "))
             {
                 String considerering = t;
                 Int32 length = considerering.Length;
                 Int32 idxofline = considerering.IndexOf(" pv ") + 4;
-                considerering = considerering.Substring(idxofline, length - idxofline);
-                Console.WriteLine(" Considering line: " + considerering);
+                this.Considering += considerering.Substring(idxofline, length - idxofline) + "\n";
             }
+          
+
         }
 
         //private String ConstructMoveString()
@@ -218,7 +259,6 @@ namespace SjakkGUI
         {
             if (UCI_Engine != null)
                  return UCI_Engine.StandardOutput.ReadToEnd();
-
 
             return null;
         }
