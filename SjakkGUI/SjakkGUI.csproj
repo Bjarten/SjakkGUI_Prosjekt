@@ -34,6 +34,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ABB.Robotics, Version=5.15.2005.0, Culture=neutral, PublicKeyToken=1da709b7d1f14b7b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\ABB.Robotics\5.15.2005.0__1da709b7d1f14b7b\ABB.Robotics.dll</HintPath>
+    </Reference>
+    <Reference Include="ABB.Robotics.Controllers, Version=5.15.2005.0, Culture=neutral, PublicKeyToken=1da709b7d1f14b7b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\ABB.Robotics.Controllers\5.15.2005.0__1da709b7d1f14b7b\ABB.Robotics.Controllers.dll</HintPath>
+    </Reference>
+    <Reference Include="ABB.Robotics.Controllers.Configuration, Version=5.15.2005.0, Culture=neutral, PublicKeyToken=1da709b7d1f14b7b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\ABB.Robotics.Controllers.Configuration\5.15.2005.0__1da709b7d1f14b7b\ABB.Robotics.Controllers.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="ABBControlDesigner, Version=5.61.2008.0, Culture=neutral, PublicKeyToken=1da709b7d1f14b7b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Windows\assembly\GAC_MSIL\ABBControlDesigner\5.61.2008.0__1da709b7d1f14b7b\ABBControlDesigner.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />

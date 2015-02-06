@@ -1,11 +1,28 @@
 ﻿<Window x:Class="SjakkGUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="750" Width="725">
     <Grid>
-        <TextBox x:Name="tbConsole" HorizontalAlignment="Left" Height="269" TextWrapping="Wrap" VerticalAlignment="Top" Width="295" Margin="212,10,0,0"/>
+        <TextBox x:Name="tbConsole" HorizontalAlignment="Left" Height="269" TextWrapping="Wrap" VerticalAlignment="Top" Width="220" Margin="287,10,0,0"/>
         <Button x:Name="btnSend" Content="Send trekk" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="432,284,0,0" Click="btnSend_Click"/>
         <TextBox x:Name="tbNextMove" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="10,10,0,0"/>
+        <ListView x:Name="lstControllerInformation" HorizontalAlignment="Left" Height="82" VerticalAlignment="Top" Width="697" Margin="10,473,0,0" MouseDoubleClick="lstControllerInformation_MouseDoubleClick">
+            <ListView.View>
+                 <GridView>
+                    <GridViewColumn Header="IP Adress" DisplayMemberBinding="{Binding IPadress}"/>
+                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding ID}"/>
+                    <GridViewColumn Header="Availabillity" DisplayMemberBinding="{Binding Availabillity}"/>
+                    <GridViewColumn Header="Virtual" DisplayMemberBinding="{Binding Virtual}"/>
+                    <GridViewColumn Header="System Name" DisplayMemberBinding="{Binding SystemName}"/>
+                    <GridViewColumn Header="RobotWare" DisplayMemberBinding="{Binding RobotWare}"/>
+                    <GridViewColumn Header="Version" DisplayMemberBinding="{Binding Version}"/>
+                    <GridViewColumn Header="Controller Name" DisplayMemberBinding="{Binding ControllerName}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button x:Name="btnStartRAPID" Content="Start RAPID" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="632,560,0,0" Click="btnStartRAPID_Click"/>
+        <Label x:Name="lblMode" Content="Manuell" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,149,0,0" FontSize="22"/>
+        <Label Content="Mode" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,136,0,0"/>
 
     </Grid>
 </Window>
