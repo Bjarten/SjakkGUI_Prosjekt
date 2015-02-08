@@ -8,7 +8,7 @@
         <TextBox x:Name="tbNextMove" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="10,10,0,0"/>
         <ListView x:Name="lstControllerInformation" HorizontalAlignment="Left" Height="82" VerticalAlignment="Top" Width="697" Margin="10,473,0,0" MouseDoubleClick="lstControllerInformation_MouseDoubleClick">
             <ListView.View>
-                 <GridView>
+                <GridView>
                     <GridViewColumn Header="IP Adress" DisplayMemberBinding="{Binding IPadress}"/>
                     <GridViewColumn Header="ID" DisplayMemberBinding="{Binding ID}"/>
                     <GridViewColumn Header="Availabillity" DisplayMemberBinding="{Binding Availabillity}"/>
@@ -20,7 +20,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="btnStartRAPID" Content="Start RAPID" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="632,560,0,0" Click="btnStartRAPID_Click"/>
+        <Button x:Name="btnStartRAPID" Content="Send koordinater til robot" HorizontalAlignment="Left" VerticalAlignment="Top" Width="159" Margin="10,560,0,0" Click="btnStartRAPID_Click" Height="24"/>
         <Label x:Name="lblMode" Content="Manuell" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,149,0,0" FontSize="22"/>
         <Label Content="Mode" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,136,0,0"/>
 
