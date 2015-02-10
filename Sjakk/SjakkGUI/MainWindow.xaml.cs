@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using System.Diagnostics;
+using System.Media;
 
 using ABB.Robotics;
 using ABB.Robotics.Controllers;
@@ -31,11 +32,11 @@ namespace SjakkGUI
     /// 
     public partial class MainWindow : Window
     {
-        EventWaitHandle ewhChessCalculations;
+        EventWaitHandle ewhChessAndRobotWork;
         EventWaitHandle ewhSendCommandToRobot;
-        UCI minSjakkMotor;
-        string motorSti = @"stockfish_14053109_32bit.exe";
-        Thread threadChessEngine;
+        UCI myChessEngine;
+        string enginePath = @"stockfish_14053109_32bit.exe";
+        Thread threadChessAndRobotWork;
         Thread threadRobot;
 
         static string sysID = string.Empty;
@@ -47,28 +48,117 @@ namespace SjakkGUI
         {
             InitializeComponent();
 
-            ewhChessCalculations = new EventWaitHandle(false, EventResetMode.AutoReset);
-            threadChessEngine = new Thread(chessCalculations);
-            threadChessEngine.IsBackground = true;
-            threadChessEngine.Start();
+            CreateController();
 
-            ewhSendCommandToRobot = new EventWaitHandle(false, EventResetMode.AutoReset);
-            threadRobot = new Thread(SendCommandToRobot);
-            threadRobot.IsBackground = true;
-            threadRobot.Start();
+            ewhChessAndRobotWork = new EventWaitHandle(false, EventResetMode.AutoReset);
+            threadChessAndRobotWork = new Thread(chessAndRobotWork);
+            threadChessAndRobotWork.IsBackground = true;
+            threadChessAndRobotWork.Start();
 
-            minSjakkMotor = new UCI();
-            minSjakkMotor.InitEngine(motorSti, "");
-            minSjakkMotor.Depth = "20";
+
+            // Not to be used for the moment/////////////////////////////////////////////
+            //ewhSendCommandToRobot = new EventWaitHandle(false, EventResetMode.AutoReset);
+            //threadRobot = new Thread(SendCommandToRobot);
+            //threadRobot.IsBackground = true;
+            //threadRobot.Start();
+            /////////////////////////////////////////////////////////////////////////////
+
+            myChessEngine = new UCI();
+            myChessEngine.InitEngine(enginePath, "");
+            myChessEngine.Depth = "10";
 
             lblMode.Content = "";
 
-            CreateController();
-
             // Event triggerd when operating mode changes
             controller.OperatingModeChanged += controller_OperatingModeChanged;
+
+            Brush firstBrush = Brushes.White;
+            Brush secondBrush = Brushes.Pink;
+
+
+            ColorChessboard(firstBrush, secondBrush);
+
+            //Image br = new Image();
+            //ImageSource brImage = new BitmapImage(new Uri("Pictures/br.png"));
+            //br.Source = "Pictures/br.png");
+
+            //Grid.SetRow(br,0);
+            //Grid.SetColumn(br,3);
+            //gridChessboard.Children.Add(br);
+
+            
+
         }
 
+        private void ColorChessboard(Brush firstBrush, Brush secondBrush)
+        {
+            Border_1.Background = firstBrush;
+            Border_2.Background = secondBrush;
+            Border_3.Background = firstBrush;
+            Border_4.Background = secondBrush;
+            Border_5.Background = firstBrush;
+            Border_6.Background = secondBrush;
+            Border_7.Background = firstBrush;
+            Border_8.Background = secondBrush;
+            Border_9.Background =  secondBrush;
+            Border_10.Background = firstBrush;
+            Border_11.Background = secondBrush;
+            Border_12.Background = firstBrush;
+            Border_13.Background = secondBrush;
+            Border_14.Background = firstBrush;
+            Border_15.Background = secondBrush;
+            Border_16.Background = firstBrush;
+            Border_17.Background = firstBrush;
+            Border_18.Background = secondBrush;
+            Border_19.Background = firstBrush;
+            Border_20.Background = secondBrush;
+            Border_21.Background = firstBrush;
+            Border_22.Background = secondBrush;
+            Border_23.Background = firstBrush;
+            Border_24.Background = secondBrush;
+            Border_25.Background = secondBrush;
+            Border_26.Background = firstBrush;
+            Border_27.Background = secondBrush;
+            Border_28.Background = firstBrush;
+            Border_29.Background = secondBrush;
+            Border_30.Background = firstBrush;
+            Border_31.Background = secondBrush;
+            Border_32.Background = firstBrush;
+            Border_33.Background = firstBrush;
+            Border_34.Background = secondBrush;
+            Border_35.Background = firstBrush;
+            Border_36.Background = secondBrush;
+            Border_37.Background = firstBrush;
+            Border_38.Background = secondBrush;
+            Border_39.Background = firstBrush;
+            Border_40.Background = secondBrush;
+            Border_41.Background = secondBrush;
+            Border_42.Background = firstBrush;
+            Border_43.Background = secondBrush;
+            Border_44.Background = firstBrush;
+            Border_45.Background = secondBrush;
+            Border_46.Background = firstBrush;
+            Border_47.Background = secondBrush;
+            Border_48.Background = firstBrush;
+            Border_49.Background = firstBrush;
+            Border_50.Background = secondBrush;
+            Border_51.Background = firstBrush;
+            Border_52.Background = secondBrush;
+            Border_53.Background = firstBrush;
+            Border_54.Background = secondBrush;
+            Border_55.Background = firstBrush;
+            Border_56.Background = secondBrush;
+            Border_57.Background = secondBrush;
+            Border_58.Background = firstBrush;
+            Border_59.Background = secondBrush;
+            Border_60.Background = firstBrush;
+            Border_61.Background = secondBrush;
+            Border_62.Background = firstBrush;
+            Border_63.Background = secondBrush;
+            Border_64.Background = firstBrush;
+        }
+
+        
 
         private void CreateController()
         {
@@ -92,7 +182,7 @@ namespace SjakkGUI
                     RobotWare = ""
                 });
             }
-
+    
             //sysID = controllers[0].SystemId.ToString();
             //controller = ControllerFactory.CreateFrom(controllers[0]);
             //controller.Logon(UserInfo.DefaultUser);
@@ -110,29 +200,49 @@ namespace SjakkGUI
 
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
-            ewhChessCalculations.Set();
+            ewhChessAndRobotWork.Set();
         }
 
 
-        private void chessCalculations(object obj)
+        private void chessAndRobotWork(object obj)
         {
+            //declare a variable of data type RapidDomain.Bool
+            ABB.Robotics.Controllers.RapidDomain.Num rapidNumxCord1;
+            ABB.Robotics.Controllers.RapidDomain.Num rapidNumxCord2;
+            ABB.Robotics.Controllers.RapidDomain.Num rapidNumyCord1;
+            ABB.Robotics.Controllers.RapidDomain.Num rapidNumyCord2;
+            ABB.Robotics.Controllers.RapidDomain.Bool rapidBoolcapturePiece;
+            ABB.Robotics.Controllers.RapidDomain.Bool rapidBoolcheckMate;
+            ABB.Robotics.Controllers.RapidDomain.Bool rapidBoolwaitForTurn;
+
+            //Make a variable that is connected to the variable in the robotcontroller 
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdxCoord1 = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "xCoord1");
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdyCoord1 = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "yCoord1");
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdxCoord2 = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "xCoord2");
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdyCoord2 = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "yCoord2");
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdcapturePiece = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "capturePiece");
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdcheckMate = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "checkMate");
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdwaitForTurn = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "waitForTurn");
+
+            rdwaitForTurn.ValueChanged += rdwaitForTurn_ValueChanged;
+  
             while (true)
             {
-                ewhChessCalculations.WaitOne();
+                ewhChessAndRobotWork.WaitOne();
 
                 this.Dispatcher.Invoke((Action)(() =>
                 {
-                    minSjakkMotor.EngineCommandMove(tbNextMove.Text);
+                    myChessEngine.EngineCommandMove(tbNextMove.Text);
                 }));
 
-                // Venter på kalkulasjoner
-                minSjakkMotor.ewhCalculating.WaitOne();
+                // Wait for calculations to finish
+                myChessEngine.ewhCalculating.WaitOne();
 
                 this.Dispatcher.Invoke((Action)(() =>
                 {
                     tbConsole.Clear();
-                    tbConsole.Text = "Tidligere trekk: " + minSjakkMotor.EarlierMoves + "\n" + "Beste trekk: " + minSjakkMotor.BestMove;
-                    tbNextMove.Text = minSjakkMotor.BestMove;
+                    tbConsole.Text = "Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove;
+                    tbNextMove.Text = myChessEngine.BestMove;
                 }));
 
                 int x1;
@@ -144,13 +254,63 @@ namespace SjakkGUI
                 char[,] positionChar;
                 string castling;
 
-                // Koordinater som skal sendes til robotkontroller
-                minSjakkMotor.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2,out takePiece ,out positionInt,out positionChar, out castling);
+                // Coordinates to be sent to robotcontroller
+                myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2,out takePiece ,out positionInt,out positionChar, out castling);
 
                 // DEBUG
                 writeChessboardToTextboxInt(positionInt);
                 writeChessboardToTextboxChar(positionChar, takePiece, castling);
+
+                //// Read the current value from the robotcontroller
+                rapidBoolcapturePiece = (ABB.Robotics.Controllers.RapidDomain.Bool)rdcapturePiece.Value;
+                rapidBoolcheckMate = (ABB.Robotics.Controllers.RapidDomain.Bool)rdcheckMate.Value;
+                rapidBoolwaitForTurn = (ABB.Robotics.Controllers.RapidDomain.Bool)rdwaitForTurn.Value;
+                rapidNumxCord1 = (ABB.Robotics.Controllers.RapidDomain.Num)rdxCoord1.Value;
+                rapidNumyCord1 = (ABB.Robotics.Controllers.RapidDomain.Num)rdyCoord1.Value;
+                rapidNumxCord2 = (ABB.Robotics.Controllers.RapidDomain.Num)rdxCoord2.Value;
+                rapidNumyCord2 = (ABB.Robotics.Controllers.RapidDomain.Num)rdyCoord2.Value;
+
+                //rapidBool = (ABB.Robotics.Controllers.RapidDomain.Bool)rd.Value;
+                //rapidNum = (ABB.Robotics.Controllers.RapidDomain.Num)x_1.Value;
+
+                ////assign the value of the RAPID data to a local variable
+                //bool boolValue = rapidBool.Value;
+                //int numValue = (int)rapidNum.Value;
+
+                // New values to be written to the robotcontroller
+                rapidBoolcapturePiece.Value = takePiece;
+                rapidBoolcheckMate.Value = false;
+                rapidBoolwaitForTurn.Value = false;
+                rapidNumxCord1.Value = x1;
+                rapidNumyCord1.Value = y1;
+                rapidNumxCord2.Value = x2;
+                rapidNumyCord2.Value = y2;
+                
+                //Request mastership of Rapid before writing to the controller
+                master = Mastership.Request(controller.Rapid);
+                //Change: controller is repaced by aController
+                rdxCoord1.Value = rapidNumxCord1;
+                rdyCoord1.Value = rapidNumyCord1;
+                rdxCoord2.Value = rapidNumxCord2;
+                rdyCoord2.Value = rapidNumyCord2;
+                rdcapturePiece.Value = rapidBoolcapturePiece;
+                rdcheckMate.Value = rapidBoolcheckMate;
+                rdwaitForTurn.Value = rapidBoolwaitForTurn; 
+                //Release mastership as soon as possible
+                master.ReleaseOnDispose = true;
+                master.Dispose();
             }
+        }
+
+        private void rdwaitForTurn_ValueChanged(object sender, DataValueChangedEventArgs e)
+        {
+            ABB.Robotics.Controllers.RapidDomain.Bool rapidBoolwaitForTurn;
+            RapidData rdwaitForTurn = (RapidData)sender;
+            rapidBoolwaitForTurn = (ABB.Robotics.Controllers.RapidDomain.Bool)rdwaitForTurn.Value;
+            bool variabel = rapidBoolwaitForTurn.Value;
+
+            if (variabel)
+            ewhChessAndRobotWork.Set();
         }
 
         private void writeChessboardToTextboxInt(int[,] position)
@@ -259,20 +419,23 @@ namespace SjakkGUI
             }));
         }
 
+        /*
         private void SendCommandToRobot(object obj)
         {
+
+            //declare a variable of data type RapidDomain.Bool
+            ABB.Robotics.Controllers.RapidDomain.Bool rapidBool;
+            ABB.Robotics.Controllers.RapidDomain.Num rapidNum;
+
+            //Make a variable that is connected to the variable in the robotcontroller 
+            ABB.Robotics.Controllers.RapidDomain.RapidData rd = controller.Rapid.GetRapidData("T_ROB1", "stableSnus", "flag");
+            ABB.Robotics.Controllers.RapidDomain.RapidData x_1 = controller.Rapid.GetRapidData("T_ROB1", "stableSnus", "x_1");
+
+
             while (true)
             {
                 // Wait for new koordinates for robot
                 ewhSendCommandToRobot.WaitOne();
-
-                //declare a variable of data type RapidDomain.Bool
-                ABB.Robotics.Controllers.RapidDomain.Bool rapidBool;
-                ABB.Robotics.Controllers.RapidDomain.Num rapidNum;
-
-                //Make a variable that is connected to the variable in the robotcontroller 
-                ABB.Robotics.Controllers.RapidDomain.RapidData rd = controller.Rapid.GetRapidData("T_ROB1", "stableSnus", "flag");
-                ABB.Robotics.Controllers.RapidDomain.RapidData x_1 = controller.Rapid.GetRapidData("T_ROB1", "stableSnus", "x_1");
 
                 //test that data type is correct before cast
                 if (rd.Value is ABB.Robotics.Controllers.RapidDomain.Bool)
@@ -297,11 +460,10 @@ namespace SjakkGUI
                     //Release mastership as soon as possible
                     master.ReleaseOnDispose = true;
                     master.Dispose();
-
                 }
             }
         }
-
+        */
 
         public class ControllerInformationItems
         {
