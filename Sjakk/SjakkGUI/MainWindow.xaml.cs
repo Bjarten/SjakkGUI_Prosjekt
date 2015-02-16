@@ -44,6 +44,7 @@ namespace SjakkGUI
         static Controller controller;
         static Mastership master;
 
+
         public MainWindow()
         {
             InitializeComponent();
@@ -65,97 +66,87 @@ namespace SjakkGUI
 
             myChessEngine = new UCI();
             myChessEngine.InitEngine(enginePath, "");
-            myChessEngine.Depth = "10";
+            myChessEngine.Depth = "4";
 
             lblMode.Content = "";
 
             // Event triggerd when operating mode changes
             controller.OperatingModeChanged += controller_OperatingModeChanged;
 
-            Brush firstBrush = Brushes.White;
-            Brush secondBrush = Brushes.Pink;
+            Brush firstBrush = Brushes.LightGray;
+            Brush secondBrush = Brushes.Gray;
 
 
             ColorChessboard(firstBrush, secondBrush);
-
-            //Image br = new Image();
-            //ImageSource brImage = new BitmapImage(new Uri("Pictures/br.png"));
-            //br.Source = "Pictures/br.png");
-
-            //Grid.SetRow(br,0);
-            //Grid.SetColumn(br,3);
-            //gridChessboard.Children.Add(br);
-
-            
-
+      
         }
 
         private void ColorChessboard(Brush firstBrush, Brush secondBrush)
         {
-            Border_1.Background = firstBrush;
-            Border_2.Background = secondBrush;
-            Border_3.Background = firstBrush;
-            Border_4.Background = secondBrush;
-            Border_5.Background = firstBrush;
-            Border_6.Background = secondBrush;
-            Border_7.Background = firstBrush;
-            Border_8.Background = secondBrush;
-            Border_9.Background =  secondBrush;
-            Border_10.Background = firstBrush;
-            Border_11.Background = secondBrush;
-            Border_12.Background = firstBrush;
-            Border_13.Background = secondBrush;
-            Border_14.Background = firstBrush;
-            Border_15.Background = secondBrush;
-            Border_16.Background = firstBrush;
-            Border_17.Background = firstBrush;
-            Border_18.Background = secondBrush;
-            Border_19.Background = firstBrush;
-            Border_20.Background = secondBrush;
-            Border_21.Background = firstBrush;
-            Border_22.Background = secondBrush;
-            Border_23.Background = firstBrush;
-            Border_24.Background = secondBrush;
-            Border_25.Background = secondBrush;
-            Border_26.Background = firstBrush;
-            Border_27.Background = secondBrush;
-            Border_28.Background = firstBrush;
-            Border_29.Background = secondBrush;
-            Border_30.Background = firstBrush;
-            Border_31.Background = secondBrush;
-            Border_32.Background = firstBrush;
-            Border_33.Background = firstBrush;
-            Border_34.Background = secondBrush;
-            Border_35.Background = firstBrush;
-            Border_36.Background = secondBrush;
-            Border_37.Background = firstBrush;
-            Border_38.Background = secondBrush;
-            Border_39.Background = firstBrush;
-            Border_40.Background = secondBrush;
-            Border_41.Background = secondBrush;
-            Border_42.Background = firstBrush;
-            Border_43.Background = secondBrush;
-            Border_44.Background = firstBrush;
-            Border_45.Background = secondBrush;
-            Border_46.Background = firstBrush;
-            Border_47.Background = secondBrush;
-            Border_48.Background = firstBrush;
-            Border_49.Background = firstBrush;
-            Border_50.Background = secondBrush;
-            Border_51.Background = firstBrush;
-            Border_52.Background = secondBrush;
-            Border_53.Background = firstBrush;
-            Border_54.Background = secondBrush;
-            Border_55.Background = firstBrush;
-            Border_56.Background = secondBrush;
-            Border_57.Background = secondBrush;
-            Border_58.Background = firstBrush;
-            Border_59.Background = secondBrush;
-            Border_60.Background = firstBrush;
-            Border_61.Background = secondBrush;
-            Border_62.Background = firstBrush;
-            Border_63.Background = secondBrush;
-            Border_64.Background = firstBrush;
+            Border_a8.Background = firstBrush;
+            Border_b8.Background = secondBrush;
+            Border_c8.Background = firstBrush;
+            Border_d8.Background = secondBrush;
+            Border_e8.Background = firstBrush;
+            Border_f8.Background = secondBrush;
+            Border_g8.Background = firstBrush;
+            Border_h8.Background = secondBrush;
+            Border_a7.Background =  secondBrush;
+            Border_b7.Background = firstBrush;
+            Border_c7.Background = secondBrush;
+            Border_d7.Background = firstBrush;
+            Border_e7.Background = secondBrush;
+            Border_f7.Background = firstBrush;
+            Border_g7.Background = secondBrush;
+            Border_h7.Background = firstBrush;
+            Border_a6.Background = firstBrush;
+            Border_b6.Background = secondBrush;
+            Border_c6.Background = firstBrush;
+            Border_d6.Background = secondBrush;
+            Border_e6.Background = firstBrush;
+            Border_f6.Background = secondBrush;
+            Border_g6.Background = firstBrush;
+            Border_h6.Background = secondBrush;
+            Border_a5.Background = secondBrush;
+            Border_b5.Background = firstBrush;
+            Border_c5.Background = secondBrush;
+            Border_d5.Background = firstBrush;
+            Border_e5.Background = secondBrush;
+            Border_f5.Background = firstBrush;
+            Border_g5.Background = secondBrush;
+            Border_h5.Background = firstBrush;
+            Border_a4.Background = firstBrush;
+            Border_b4.Background = secondBrush;
+            Border_c4.Background = firstBrush;
+            Border_d4.Background = secondBrush;
+            Border_e4.Background = firstBrush;
+            Border_f4.Background = secondBrush;
+            Border_g4.Background = firstBrush;
+            Border_h4.Background = secondBrush;
+            Border_a3.Background = secondBrush;
+            Border_b3.Background = firstBrush;
+            Border_c3.Background = secondBrush;
+            Border_d3.Background = firstBrush;
+            Border_e3.Background = secondBrush;
+            Border_f3.Background = firstBrush;
+            Border_g3.Background = secondBrush;
+            Border_h3.Background = firstBrush;
+            Border_a2.Background = firstBrush;
+            Border_b2.Background = secondBrush;
+            Border_c2.Background = firstBrush;
+            Border_d2.Background = secondBrush;
+            Border_e2.Background = firstBrush;
+            Border_f2.Background = secondBrush;
+            Border_g2.Background = firstBrush;
+            Border_h2.Background = secondBrush;
+            Border_a1.Background = secondBrush;
+            Border_b1.Background = firstBrush;
+            Border_c1.Background = secondBrush;
+            Border_d1.Background = firstBrush;
+            Border_e1.Background = secondBrush;
+            Border_f1.Background = firstBrush;
+            Border_g1.Background = secondBrush;
+            Border_h1.Background = firstBrush;
         }
 
         
@@ -206,6 +197,16 @@ namespace SjakkGUI
 
         private void chessAndRobotWork(object obj)
         {
+
+            Border[,] borders = new Border[8, 8] {{ Border_a1 , Border_b1 , Border_c1 , Border_d1 , Border_e1 , Border_f1 , Border_g1 , Border_h1 },
+                                                  { Border_a2 , Border_b2 , Border_c2 , Border_d2 , Border_e2 , Border_f2 , Border_g2 , Border_h2 },
+ 				                                  { Border_a3 , Border_b3 , Border_c3 , Border_d3 , Border_e3 , Border_f3 , Border_g3 , Border_h3 },
+                                                  { Border_a4 , Border_b4 , Border_c4 , Border_d4 , Border_e4 , Border_f4 , Border_g4 , Border_h4 },
+                                                  { Border_a5 , Border_b5 , Border_c5 , Border_d5 , Border_e5 , Border_f5 , Border_g5 , Border_h5 },
+                                                  { Border_a6 , Border_b6 , Border_c6 , Border_d6 , Border_e6 , Border_f6 , Border_g6 , Border_h6 },
+                                                  { Border_a7 , Border_b7, Border_c7 , Border_d7 , Border_e7 , Border_f7 , Border_g7 , Border_h7, },
+                                                  { Border_a8 , Border_b8, Border_c8 , Border_d8 , Border_e8 , Border_f8 , Border_g8 , Border_h8 }};
+
             //declare a variable of data type RapidDomain.Bool
             ABB.Robotics.Controllers.RapidDomain.Num rapidNumxCord1;
             ABB.Robotics.Controllers.RapidDomain.Num rapidNumxCord2;
@@ -232,6 +233,7 @@ namespace SjakkGUI
 
                 this.Dispatcher.Invoke((Action)(() =>
                 {
+                    // Sender inn sjakktrekket frå tekstboks.
                     myChessEngine.EngineCommandMove(tbNextMove.Text);
                 }));
 
@@ -247,19 +249,24 @@ namespace SjakkGUI
 
                 int x1;
                 int x2;
+                int x3;
                 int y1;
                 int y2;
+                int y3;
                 bool takePiece;
                 int[,] positionInt;
                 char[,] positionChar;
                 string castling;
-
+                bool enPassant;
                 // Coordinates to be sent to robotcontroller
-                myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2,out takePiece ,out positionInt,out positionChar, out castling);
+                myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3,out y3,out takePiece ,out positionInt,out positionChar, out castling, out enPassant);
 
                 // DEBUG
                 writeChessboardToTextboxInt(positionInt);
                 writeChessboardToTextboxChar(positionChar, takePiece, castling);
+
+                // Write the current position to the chessboard graphic in the GUI
+                ChessboardGraphic(borders, x1, x2, x3, y1, y2, y3, castling, enPassant);
 
                 //// Read the current value from the robotcontroller
                 rapidBoolcapturePiece = (ABB.Robotics.Controllers.RapidDomain.Bool)rdcapturePiece.Value;
@@ -302,6 +309,95 @@ namespace SjakkGUI
             }
         }
 
+        /// <summary>
+        /// Updates the chessboard graphic in the GUI
+        /// </summary>
+        /// <param name="borders"></param>
+        /// <param name="x1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y1"></param>
+        /// <param name="y2"></param>
+        /// <param name="castling"></param>
+        private void ChessboardGraphic(Border[,] borders, int x1, int x2, int x3, int y1, int y2, int y3, string castling, bool enPasant)
+        {
+            this.Dispatcher.Invoke((Action)(() =>
+            {
+                if (castling == "" && !enPasant)
+                {
+                    Image image = new Image();
+                    // Delete the piece in the field its being moved to
+                    borders[y2, x2].Child = null;
+                    // Copy the piece that is being moved
+                    image = (Image)borders[y1, x1].Child;
+                    // delete the piece in old position
+                    borders[y1, x1].Child = null;
+                    // Paste piece in new position
+                    borders[y2, x2].Child = image;
+                }
+                else if (castling == "WShort")
+                {
+                    Image image = new Image();
+                    // Copy the image of the king 
+                    image = (Image)borders[0, 4].Child;
+                    // Delete the old picture
+                    borders[0, 4].Child = null;
+                    // Paste king in new position
+                    borders[0, 6].Child = image;
+                    // Copy picture of rook
+                    image = (Image)borders[0, 7].Child;
+                    // Delete old picture of rook
+                    borders[0, 7].Child = null;
+                    // Paste rook in new position
+                    borders[0, 5].Child = image;
+                }
+                else if (castling == "WLong")
+                {
+                    Image image = new Image();
+                    image = (Image)borders[0, 4].Child;
+                    borders[0, 4].Child = null;
+                    borders[0, 2].Child = image;
+                    image = (Image)borders[0, 0].Child;
+                    borders[0, 0].Child = null;
+                    borders[0, 3].Child = image;
+                }
+                else if (castling == "BShort")
+                {
+                    Image image = new Image();
+                    image = (Image)borders[7, 4].Child;
+                    borders[7, 4].Child = null;
+                    borders[7, 6].Child = image;
+                    image = (Image)borders[7, 7].Child;
+                    borders[7, 7].Child = null;
+                    borders[7, 5].Child = image;
+                }
+                else if (castling == "BLong")
+                {
+                    Image image = new Image();
+                    image = (Image)borders[7, 4].Child;
+                    borders[7, 4].Child = null;
+                    borders[7, 2].Child = image;
+                    image = (Image)borders[7, 0].Child;
+                    borders[7, 0].Child = null;
+                    borders[7, 3].Child = image;
+                }
+
+                if (enPasant)
+                {
+                    Image image = new Image();
+                    // Delete the piece in the field its being moved to
+                    borders[y2, x2].Child = null;
+                    // Copy the piece that is being moved
+                    image = (Image)borders[y1, x1].Child;
+                    // delete the piece in old position
+                    borders[y1, x1].Child = null;
+                    // Paste piece in new position
+                    borders[y2, x2].Child = image;
+                    // Delete piece en pasant
+                    borders[y3, x3].Child = null;
+                }
+            }));
+        }
+
         private void rdwaitForTurn_ValueChanged(object sender, DataValueChangedEventArgs e)
         {
             ABB.Robotics.Controllers.RapidDomain.Bool rapidBoolwaitForTurn;
@@ -312,6 +408,9 @@ namespace SjakkGUI
             if (variabel)
             ewhChessAndRobotWork.Set();
         }
+
+
+        
 
         private void writeChessboardToTextboxInt(int[,] position)
         {

@@ -45,81 +45,148 @@
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <Border x:Name="Border_1" Grid.Column="0" Grid.Row="0">
+            <Border x:Name="Border_a8" Grid.Column="0" Grid.Row="0">
+                <Image x:Name="ImagebrLeft" Source="Pictures/br.png"/>
+            </Border>
+            <Border x:Name="Border_b8" Grid.Column="1" Grid.Row="0">
+                <Image x:Name="ImagebnLeft" Source="Pictures/bn.png"/>
+            </Border>
+            <Border x:Name="Border_c8" Grid.Column="2" Grid.Row="0">
+                <Image x:Name="ImagebbLeft" Source="Pictures/bb.png"/>
+            </Border>
+            <Border x:Name="Border_d8" Grid.Column="3" Grid.Row="0">
+                <Image x:Name="Imagebq" Source="Pictures/bq.png"/>
+            </Border>
+            <Border x:Name="Border_e8" Grid.Column="4" Grid.Row="0">
+                <Image x:Name="Imagebk" Source="Pictures/bk.png"/>
+            </Border>
+            <Border x:Name="Border_f8" Grid.Column="5" Grid.Row="0">
+                <Image x:Name="ImagebbRight" Source="Pictures/bb.png"/>
+            </Border>
+            <Border x:Name="Border_g8" Grid.Column="6" Grid.Row="0">
+                <Image x:Name="ImagebnRight" Source="Pictures/bn.png"/>
+            </Border>
+            <Border x:Name="Border_h8" Grid.Column="7" Grid.Row="0">
+                <Image x:Name="ImagebrRight" Source="Pictures/br.png"/>
+            </Border>
+            <Border x:Name="Border_a7" Grid.Column="0" Grid.Row="1">
+                <Image x:Name="Imagebp_1" Source="Pictures/bp.png"/>
+            </Border>
+            <Border x:Name="Border_b7" Grid.Column="1" Grid.Row="1">
+                <Image x:Name="Imagebp_2" Source="Pictures/bp.png"/>
+            </Border>
+            <Border x:Name="Border_c7" Grid.Column="2" Grid.Row="1">
+                <Image x:Name="Imagebp_3" Source="Pictures/bp.png"/>
+            </Border>
+            <Border x:Name="Border_d7" Grid.Column="3" Grid.Row="1">
+                <Image x:Name="Imagebp_4" Source="Pictures/bp.png"/>
+            </Border>
+            <Border x:Name="Border_e7" Grid.Column="4" Grid.Row="1">
+                <Image x:Name="Imagebp_5" Source="Pictures/bp.png"/>
+            </Border>
+            <Border x:Name="Border_f7" Grid.Column="5" Grid.Row="1">
+                <Image x:Name="Imagebp_6" Source="Pictures/bp.png" Margin="0,-1,0,1"/>
+            </Border>
+            <Border x:Name="Border_g7" Grid.Column="6" Grid.Row="1">
+                <Image x:Name="Imagebp_7" Source="Pictures/bp.png"/>
+            </Border>
+            <Border x:Name="Border_h7" Grid.Column="7" Grid.Row="1">
+                <Image x:Name="Imagebp_8" Source="Pictures/bp.png"/>
+            </Border>
+            <Border x:Name="Border_a6" Grid.Column="0" Grid.Row="2"/>
+            <Border x:Name="Border_b6" Grid.Column="1" Grid.Row="2"/>
+            <Border x:Name="Border_c6" Grid.Column="2" Grid.Row="2"/>
+            <Border x:Name="Border_d6" Grid.Column="3" Grid.Row="2"/>
+            <Border x:Name="Border_e6" Grid.Column="4" Grid.Row="2"/>
+            <Border x:Name="Border_f6" Grid.Column="5" Grid.Row="2"/>
+            <Border x:Name="Border_g6" Grid.Column="6" Grid.Row="2"/>
+            <Border x:Name="Border_h6" Grid.Column="7" Grid.Row="2"/>
+            <Border x:Name="Border_a5" Grid.Column="0" Grid.Row="3"/>
+            <Border x:Name="Border_b5" Grid.Column="1" Grid.Row="3"/>
+            <Border x:Name="Border_c5" Grid.Column="2" Grid.Row="3"/>
+            <Border x:Name="Border_d5" Grid.Column="3" Grid.Row="3"/>
+            <Border x:Name="Border_e5" Grid.Column="4" Grid.Row="3"/>
+            <Border x:Name="Border_f5" Grid.Column="5" Grid.Row="3"/>
+            <Border x:Name="Border_g5" Grid.Column="6" Grid.Row="3"/>
+            <Border x:Name="Border_h5" Grid.Column="7" Grid.Row="3"/>
+            <Border x:Name="Border_a4" Grid.Column="0" Grid.Row="4"/>
+            <Border x:Name="Border_b4" Grid.Column="1" Grid.Row="4"/>
+            <Border x:Name="Border_c4" Grid.Column="2" Grid.Row="4"/>
+            <Border x:Name="Border_d4" Grid.Column="3" Grid.Row="4"/>
+            <Border x:Name="Border_e4" Grid.Column="4" Grid.Row="4"/>
+            <Border x:Name="Border_f4" Grid.Column="5" Grid.Row="4"/>
+            <Border x:Name="Border_g4" Grid.Column="6" Grid.Row="4"/>
+            <Border x:Name="Border_h4" Grid.Column="7" Grid.Row="4"/>
+            <Border x:Name="Border_a3" Grid.Column="0" Grid.Row="5">
+            </Border>
+            <Border x:Name="Border_b3" Grid.Column="1" Grid.Row="5">
+            </Border>
+            <Border x:Name="Border_c3" Grid.Column="2" Grid.Row="5">
+            </Border>
+            <Border x:Name="Border_d3" Grid.Column="3" Grid.Row="5">
+            </Border>
+            <Border x:Name="Border_e3" Grid.Column="4" Grid.Row="5">
+            </Border>
+            <Border x:Name="Border_f3" Grid.Column="5" Grid.Row="5">
+            </Border>
+            <Border x:Name="Border_g3" Grid.Column="6" Grid.Row="5">
+            </Border>
+            <Border x:Name="Border_h3" Grid.Column="7" Grid.Row="5">
+            </Border>
+            <Border x:Name="Border_a2" Grid.Column="0" Grid.Row="6">
+                <Image x:Name="Imagewp_1" Source="Pictures/wp.png"/>
+            </Border>
+            <Border x:Name="Border_b2" Grid.Column="1" Grid.Row="6">
+                <Image x:Name="Imagewp_2" Source="Pictures/wp.png"/>
+            </Border>
+            <Border x:Name="Border_c2" Grid.Column="2" Grid.Row="6">
+                <Image x:Name="Imagewp_3" Source="Pictures/wp.png"/>
+            </Border>
+            <Border x:Name="Border_d2" Grid.Column="3" Grid.Row="6">
+                <Image x:Name="Imagewp_4" Source="Pictures/wp.png"/>
+            </Border>
+            <Border x:Name="Border_e2" Grid.Column="4" Grid.Row="6">
+                <Image x:Name="Imagewp_5" Source="Pictures/wp.png"/>
+            </Border>
+            <Border x:Name="Border_f2" Grid.Column="5" Grid.Row="6">
+                <Image x:Name="Imagewp_6" Source="Pictures/wp.png"/>
+            </Border>
+            <Border x:Name="Border_g2" Grid.Column="6" Grid.Row="6">
+                <Image x:Name="Imagewp_7" Source="Pictures/wp.png"/>
+            </Border>
+            <Border x:Name="Border_h2" Grid.Column="7" Grid.Row="6">
+                <Image x:Name="Imagewp_8" Source="Pictures/wp.png"/>
 
             </Border>
-            <Border x:Name="Border_2" Grid.Column="1" Grid.Row="0">
-                <Image x:Name="bn" Source="Pictures/bn.png"/>
+            <Border x:Name="Border_a1" Grid.Column="0" Grid.Row="7">
+                <Image x:Name="ImagewrLeft" Source="Pictures/wr.png">
+                   
+                </Image>
+
             </Border>
-            <Border x:Name="Border_3" Grid.Column="2" Grid.Row="0">
-                <Image x:Name="bb" Source="Pictures/bb.png"/>
+            <Border x:Name="Border_b1" Grid.Column="1" Grid.Row="7">
+                <Image x:Name="ImagewnLeft" Source="Pictures/wn.png"/>
             </Border>
-            <Border x:Name="Border_4" Grid.Column="3" Grid.Row="0">
-                <Image x:Name="bq" Source="Pictures/bq.png"/>
+            <Border x:Name="Border_c1" Grid.Column="2" Grid.Row="7">
+                <Image x:Name="ImagewbLeft" Source="Pictures/wb.png"/>
+
             </Border>
-            <Border x:Name="Border_5" Grid.Column="4" Grid.Row="0">
-                <Image x:Name="bk" Source="Pictures/bk.png"/>
+            <Border x:Name="Border_d1" Grid.Column="3" Grid.Row="7">
+                <Image x:Name="Imagewq" Source="Pictures/wq.png"/>
             </Border>
-            <Border x:Name="Border_6" Grid.Column="5" Grid.Row="0">
+            <Border x:Name="Border_e1" Grid.Column="4" Grid.Row="7">
+                <Image x:Name="Imagewk" Source="Pictures/wk.png"/>
+
             </Border>
-            <Border x:Name="Border_7" Grid.Column="6" Grid.Row="0"/>
-            <Border x:Name="Border_8" Grid.Column="7" Grid.Row="0"/>
-            <Border x:Name="Border_9" Grid.Column="0" Grid.Row="1"/>
-            <Border x:Name="Border_10" Grid.Column="1" Grid.Row="1"/>
-            <Border x:Name="Border_11" Grid.Column="2" Grid.Row="1"/>
-            <Border x:Name="Border_12" Grid.Column="3" Grid.Row="1"/>
-            <Border x:Name="Border_13" Grid.Column="4" Grid.Row="1"/>
-            <Border x:Name="Border_14" Grid.Column="5" Grid.Row="1"/>
-            <Border x:Name="Border_15" Grid.Column="6" Grid.Row="1"/>
-            <Border x:Name="Border_16" Grid.Column="7" Grid.Row="1"/>
-            <Border x:Name="Border_17" Grid.Column="0" Grid.Row="2"/>
-            <Border x:Name="Border_18" Grid.Column="1" Grid.Row="2"/>
-            <Border x:Name="Border_19" Grid.Column="2" Grid.Row="2"/>
-            <Border x:Name="Border_20" Grid.Column="3" Grid.Row="2"/>
-            <Border x:Name="Border_21" Grid.Column="4" Grid.Row="2"/>
-            <Border x:Name="Border_22" Grid.Column="5" Grid.Row="2"/>
-            <Border x:Name="Border_23" Grid.Column="6" Grid.Row="2"/>
-            <Border x:Name="Border_24" Grid.Column="7" Grid.Row="2"/>
-            <Border x:Name="Border_25" Grid.Column="0" Grid.Row="3"/>
-            <Border x:Name="Border_26" Grid.Column="1" Grid.Row="3"/>
-            <Border x:Name="Border_27" Grid.Column="2" Grid.Row="3"/>
-            <Border x:Name="Border_28" Grid.Column="3" Grid.Row="3"/>
-            <Border x:Name="Border_29" Grid.Column="4" Grid.Row="3"/>
-            <Border x:Name="Border_30" Grid.Column="5" Grid.Row="3"/>
-            <Border x:Name="Border_31" Grid.Column="6" Grid.Row="3"/>
-            <Border x:Name="Border_32" Grid.Column="7" Grid.Row="3"/>
-            <Border x:Name="Border_33" Grid.Column="0" Grid.Row="4"/>
-            <Border x:Name="Border_34" Grid.Column="1" Grid.Row="4"/>
-            <Border x:Name="Border_35" Grid.Column="2" Grid.Row="4"/>
-            <Border x:Name="Border_36" Grid.Column="3" Grid.Row="4"/>
-            <Border x:Name="Border_37" Grid.Column="4" Grid.Row="4"/>
-            <Border x:Name="Border_38" Grid.Column="5" Grid.Row="4"/>
-            <Border x:Name="Border_39" Grid.Column="6" Grid.Row="4"/>
-            <Border x:Name="Border_40" Grid.Column="7" Grid.Row="4"/>
-            <Border x:Name="Border_41" Grid.Column="0" Grid.Row="5"/>
-            <Border x:Name="Border_42" Grid.Column="1" Grid.Row="5"/>
-            <Border x:Name="Border_43" Grid.Column="2" Grid.Row="5"/>
-            <Border x:Name="Border_44" Grid.Column="3" Grid.Row="5"/>
-            <Border x:Name="Border_45" Grid.Column="4" Grid.Row="5"/>
-            <Border x:Name="Border_46" Grid.Column="5" Grid.Row="5"/>
-            <Border x:Name="Border_47" Grid.Column="6" Grid.Row="5"/>
-            <Border x:Name="Border_48" Grid.Column="7" Grid.Row="5"/>
-            <Border x:Name="Border_49" Grid.Column="0" Grid.Row="6"/>
-            <Border x:Name="Border_50" Grid.Column="1" Grid.Row="6"/>
-            <Border x:Name="Border_51" Grid.Column="2" Grid.Row="6"/>
-            <Border x:Name="Border_52" Grid.Column="3" Grid.Row="6"/>
-            <Border x:Name="Border_53" Grid.Column="4" Grid.Row="6"/>
-            <Border x:Name="Border_54" Grid.Column="5" Grid.Row="6"/>
-            <Border x:Name="Border_55" Grid.Column="6" Grid.Row="6"/>
-            <Border x:Name="Border_56" Grid.Column="7" Grid.Row="6"/>
-            <Border x:Name="Border_57" Grid.Column="0" Grid.Row="7"/>
-            <Border x:Name="Border_58" Grid.Column="1" Grid.Row="7"/>
-            <Border x:Name="Border_59" Grid.Column="2" Grid.Row="7"/>
-            <Border x:Name="Border_60" Grid.Column="3" Grid.Row="7"/>
-            <Border x:Name="Border_61" Grid.Column="4" Grid.Row="7"/>
-            <Border x:Name="Border_62" Grid.Column="5" Grid.Row="7"/>
-            <Border x:Name="Border_63" Grid.Column="6" Grid.Row="7"/>
-            <Border x:Name="Border_64" Grid.Column="7" Grid.Row="7"/>
+            <Border x:Name="Border_f1" Grid.Column="5" Grid.Row="7">
+                <Image x:Name="ImagewbRight" Source="Pictures/wb.png"/>
+            </Border>
+            <Border x:Name="Border_g1" Grid.Column="6" Grid.Row="7">
+                <Image x:Name="ImagewnRight" Source="Pictures/wn.png"/>
+            </Border>
+            <Border x:Name="Border_h1" Grid.Column="7" Grid.Row="7">
+                <Image x:Name="ImagewrRight" Source="Pictures/wr.png"/>
+            </Border>
 
         </Grid>
 

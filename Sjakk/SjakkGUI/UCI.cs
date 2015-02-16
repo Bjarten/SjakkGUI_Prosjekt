@@ -16,6 +16,7 @@ namespace SjakkGUI
         /// </summary>
         public EventWaitHandle ewhCalculating = new EventWaitHandle(false, EventResetMode.AutoReset);
         string bestMove = string.Empty;
+        char lastPieceMoved = ' ';
         string considering = string.Empty;
         string lastMove = string.Empty;
         string depth = "20";
@@ -165,7 +166,7 @@ namespace SjakkGUI
             if (t.Contains("bestmove"))
             {
                 String bestmove = t.Substring(9, 4);
-                this.BestMove = t.Substring(9, 4);
+                this.BestMove = bestmove;
                 ewhCalculating.Set();
             }
             else if (t.Contains(" pv "))
@@ -203,17 +204,36 @@ namespace SjakkGUI
             return null;
         }
        
-        public void decodingChessMoveToCoordinates(out int x1, out int y1, out int x2, out int y2, out bool takePiece, out int [,]positionInt, out char [,]positionChar, out string castling)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x1">from x1</param>
+        /// <param name="y1">from y1</param>
+        /// <param name="x2">to x2</param>
+        /// <param name="y2">to y2</param>
+        /// <param name="x3">en pasant coordinates</param>
+        /// <param name="y3">en pasant coordiantes</param>
+        /// <param name="takePiece"></param>
+        /// <param name="positionInt"></param>
+        /// <param name="positionChar"></param>
+        /// <param name="castling"></param>
+        /// <param name="enPassant"></param>
+        public void decodingChessMoveToCoordinates(out int x1, out int y1, out int x2, out int y2, out int x3, out int y3, out bool takePiece, out int [,]positionInt, out char [,]positionChar, out string castling, out bool enPassant)
         {
             x1 = 8;
             x2 = 8;
             y1 = 8;
             y2 = 8;
+            x3 = 8;
+            y3 = 8;
             takePiece = false;
+            enPassant = false;
+            castling = "";
 
             string chessMove = this.BestMove;
+            string lastChessMove = this.lastMove;
 
-            char substring = Convert.ToChar(chessMove.Substring(0, 1));
+           char substring = Convert.ToChar(chessMove.Substring(0, 1));
 
             switch (substring)
             {
@@ -403,39 +423,266 @@ namespace SjakkGUI
                 }
                 else
                 {
-                    chessboardChar[y2, x2] = chessboardChar[y1, x1];
-                    chessboardChar[y1, x1] = ' ';
-                    positionChar = chessboardChar;
+                    takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
 
-                    // Write what chesspiece that has been moved to the chessboardmatrix
-                    chessboardInt[y1, x1] = 0;
-                    if (chessboardInt[y2, x2] == 1)
-                        takePiece = true;
-                    chessboardInt[y2, x2] = 1;
-                    positionInt = chessboardInt;
-
-                    castling = "";
                 }
             }
+            else if (lastPieceMoved == 'p' || lastPieceMoved == 'P') // Testing for en passant
+                {
+                    if (lastChessMove == "a2a4" || lastChessMove == "b2b4" || lastChessMove == "c2c4" || lastChessMove == "d2d4" || lastChessMove == "e2e4" || lastChessMove == "f2f4" || lastChessMove == "g2g4" || lastChessMove == "h2ah4" ||
+                        lastChessMove == "a7a5" || lastChessMove == "b7b5" || lastChessMove == "c7c5" || lastChessMove == "d7d5" || lastChessMove == "e7e5" || lastChessMove == "f7f5" || lastChessMove == "g7g5" || lastChessMove == "h7h5")
+                    {
+                        if (chessboardChar[y1, x1] == 'p' || chessboardChar[y1, x1] == 'P')
+                        {
+                            switch (lastChessMove)
+                            {
+                                case "a2a4":
+                                    if (chessMove == "b4a3")
+                                    {
+                                        enPassant = true;
+                                        x3 = 0;
+                                        y3 = 3;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                    takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "b2b4":
+                                    if (chessMove == "c4b3" || chessMove == "a4b3")
+                                    {
+                                        enPassant = true;
+                                        x3 = 1;
+                                        y3 = 3;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "c2c4":
+                                    if (chessMove == "d4c3" || chessMove == "b4c3")
+                                    {
+                                        enPassant = true;
+                                        x3 = 2;
+                                        y3 = 3;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "d2d4":
+                                    if (chessMove == "e4d3" || chessMove == "c4d3")
+                                    {
+                                        enPassant = true;
+                                        x3 = 3;
+                                        y3 = 3;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "e2e4":
+                                    if (chessMove == "f4e3" || chessMove == "d4e3")
+                                    {
+                                        enPassant = true;
+                                        x3 = 4;
+                                        y3 = 3;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "f2f4":
+                                    if (chessMove == "g4f3" || chessMove == "e4f3")
+                                    {
+                                        enPassant = true;
+                                        x3 = 5;
+                                        y3 = 3;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "g2g4":
+                                    if (chessMove == "h4g3" || chessMove == "f4g3")
+                                    {
+                                        enPassant = true;
+                                        x3 = 6;
+                                        y3 = 3;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "h2h4":
+                                    if (chessMove == "g4h3")
+                                    {
+                                        enPassant = true;
+                                        x3 = 7;
+                                        y3 = 3;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "a7a5":
+                                    if (chessMove == "b5a6")
+                                    {
+                                        enPassant = true;
+                                        x3 = 0;
+                                        y3 = 4;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "b7b5":
+                                    if (chessMove == "a5b6" || chessMove == "c5b6")
+                                    {
+                                        enPassant = true;
+                                        x3 = 1;
+                                        y3 = 4;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "c7c5":
+                                    if (chessMove == "b5c6" || chessMove == "d5d3")
+                                    {
+                                        enPassant = true;
+                                        x3 = 2;
+                                        y3 = 4;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "d7d5":
+                                    if (chessMove == "c5d6" || chessMove == "e5d6")
+                                    {
+                                        enPassant = true;
+                                        x3 = 3;
+                                        y3 = 4;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "e7e5":
+                                    if (chessMove == "d5e6" || chessMove == "f5e6")
+                                    {
+                                        enPassant = true;
+                                        x3 = 4;
+                                        y3 = 4;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "f7f5":
+                                    if (chessMove == "e5f6" || chessMove == "g5f6")
+                                    {
+                                        enPassant = true;
+                                        x3 = 5;
+                                        y3 = 4;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "g7g5":
+                                    if (chessMove == "h5g6" || chessMove == "h5g6")
+                                    {
+                                        enPassant = true;
+                                        x3 = 6;
+                                        y3 = 4;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                case "h7h5":
+                                    if (chessMove == "g5h6")
+                                    {
+                                        enPassant = true;
+                                        x3 = 7;
+                                        y3 = 4;
+
+                                        enPasantChessmoveToMatrix(x1, y1, x2, y2, x3, y3, out positionInt, out positionChar);
+                                    }
+                                    else
+                                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                                default:
+                                    takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                                    break;
+                            }
+                        }
+                        else
+                        takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                    }
+                    else
+                    takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
+                }
             else
             {
-
-                chessboardChar[y2, x2] = chessboardChar[y1, x1];
-                chessboardChar[y1, x1] = ' ';
-                positionChar = chessboardChar;
-
-
-
-                // Write what chesspiece that has been moved to the chessboardmatrix
-                chessboardInt[y1, x1] = 0;
-                if (chessboardInt[y2, x2] == 1)
-                    takePiece = true;
-                chessboardInt[y2, x2] = 1;
-                positionInt = chessboardInt;
-
-                castling = "";
+                takePiece = ChessmoveToMatrix(x1, y1, x2, y2, takePiece, out positionInt, out positionChar);
             }
- 
+
+
+            // Remembers the last move
+            this.lastPieceMoved = chessboardChar[y2, x2];
+        }
+
+        private bool ChessmoveToMatrix(int x1, int y1, int x2, int y2, bool takePiece, out int[,] positionInt, out char[,] positionChar)
+        {
+            // Move the piece to new coordinates
+            chessboardChar[y2, x2] = chessboardChar[y1, x1];
+            // Remove piece from old coordinates
+            chessboardChar[y1, x1] = ' ';
+            // Copy marix to the output matrix
+            positionChar = chessboardChar;
+
+            // Write what chesspiece that has been moved to the chessboard matrix
+            chessboardInt[y1, x1] = 0;
+            if (chessboardInt[y2, x2] == 1)
+                takePiece = true;
+            chessboardInt[y2, x2] = 1;
+            positionInt = chessboardInt;
+            return takePiece;
+        }
+
+        private void enPasantChessmoveToMatrix(int x1, int y1, int x2, int y2, int x3, int y3, out int[,] positionInt, out char[,] positionChar)
+        {
+            // Move the piece to new coordinates
+            chessboardChar[y2, x2] = chessboardChar[y1, x1];
+            // Remove piece from old coordinates
+            chessboardChar[y1, x1] = ' ';
+            // Remove piece en pasant
+            chessboardChar[y3, x3] = ' ';
+            // Copy marix to the output matrix
+            positionChar = chessboardChar;
+
+            // salmost same as over
+            chessboardInt[y1, x1] = 0;
+            chessboardInt[y2, x2] = 1;
+            chessboardInt[y3, x3] = 0;
+            positionInt = chessboardInt;
         }
 
 
