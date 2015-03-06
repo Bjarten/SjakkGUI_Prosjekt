@@ -184,6 +184,10 @@ namespace SjakkGUI
                 UCI_Engine.StandardInput.WriteLine(cmd);
         }
 
+        /// <summary>
+        /// The move that is being played
+        /// </summary>
+        /// <param name="nextMove"></param>
         public void EngineCommandMove(String nextMove)
         {
             if (UCI_Engine != null)
@@ -218,7 +222,7 @@ namespace SjakkGUI
         /// <param name="positionChar"></param>
         /// <param name="castling"></param>
         /// <param name="enPassant"></param>
-        public void decodingChessMoveToCoordinates(out int x1, out int y1, out int x2, out int y2, out int x3, out int y3, out bool takePiece, out int [,]positionInt, out char [,]positionChar, out string castling, out bool enPassant)
+        public void decodingChessMoveToCoordinates(out int x1, out int y1, out int x2, out int y2, out int x3, out int y3, out bool takePiece, out int [,]positionInt, out char [,]positionChar, out string castling, out bool enPassant, string chessMove)
         {
             x1 = 8;
             x2 = 8;
@@ -230,7 +234,6 @@ namespace SjakkGUI
             enPassant = false;
             castling = "";
 
-            string chessMove = this.BestMove;
             string lastChessMove = this.lastMove;
 
            char substring = Convert.ToChar(chessMove.Substring(0, 1));

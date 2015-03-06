@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="750" Width="1500">
     <Grid>
-        <TextBox x:Name="tbConsole" HorizontalAlignment="Left" Height="431" TextWrapping="Wrap" VerticalAlignment="Top" Width="523" Margin="184,10,0,0"/>
-        <Button x:Name="btnSend" Content="Send trekk" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="632,446,0,0" Click="btnSend_Click"/>
+        <TextBox x:Name="tbConsole" HorizontalAlignment="Left" Height="431" TextWrapping="Wrap" VerticalAlignment="Top" Width="521" Margin="135,10,0,0"/>
+        <Button x:Name="btnSend" Content="Send trekk" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="581,446,0,0" Click="btnSend_Click"/>
         <TextBox x:Name="tbNextMove" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Margin="10,10,0,0"/>
-        <ListView x:Name="lstControllerInformation" HorizontalAlignment="Left" Height="82" VerticalAlignment="Top" Width="697" Margin="10,473,0,0" MouseDoubleClick="lstControllerInformation_MouseDoubleClick">
+        <ListView x:Name="lstControllerInformation" HorizontalAlignment="Left" Height="82" VerticalAlignment="Top" Width="646" Margin="10,473,0,0" MouseDoubleClick="lstControllerInformation_MouseDoubleClick">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="IP Adress" DisplayMemberBinding="{Binding IPadress}"/>
@@ -21,10 +21,10 @@
             </ListView.View>
         </ListView>
         <Button x:Name="btnStartRAPID" Content="Send koordinater til robot" HorizontalAlignment="Left" VerticalAlignment="Top" Width="159" Margin="10,560,0,0" Click="btnStartRAPID_Click" Height="24"/>
-        <Label x:Name="lblMode" Content="Manuell" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,149,0,0" FontSize="22"/>
-        <Label Content="Mode" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,136,0,0"/>
+        <Label x:Name="lblMode" Content="Manuell" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,638,0,0" FontSize="22"/>
+        <Label Content="Mode" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,625,0,0"/>
 
-        <Grid x:Name="gridChessboard" HorizontalAlignment="Left" Height="545" VerticalAlignment="Top" Width="545" Margin="712,10,0,0">
+        <Grid x:Name="gridChessboard" HorizontalAlignment="Left" Height="545" VerticalAlignment="Top" Width="545" Margin="705,10,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="Column_0"/>
                 <ColumnDefinition />
@@ -160,7 +160,7 @@
             </Border>
             <Border x:Name="Border_a1" Grid.Column="0" Grid.Row="7">
                 <Image x:Name="ImagewrLeft" Source="Pictures/wr.png">
-                   
+
                 </Image>
 
             </Border>
@@ -189,6 +189,23 @@
             </Border>
 
         </Grid>
+        <Label Content="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="677,498,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="677,431,0,0" FontSize="24"/>
+        <Label Content="3" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="677,366,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="4" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="677,299,0,0" FontSize="24"/>
+        <Label Content="5" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="677,235,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="6" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="677,168,0,0" FontSize="24"/>
+        <Label Content="7" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="677,95,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="8" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="677,28,0,0" FontSize="24"/>
+        <Label Content="a" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="728,560,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="b" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="796,560,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="c" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="864,560,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="d" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="933,560,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="e" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="1000,560,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="f" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="1070,560,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="g" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="1135,560,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label Content="h" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="1203,560,0,0" FontSize="24" RenderTransformOrigin="0.478,-0.071"/>
+        <Label x:Name="lblHumanRobotTurn" Content="Human" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="677,602,0,0" FontSize="48"/>
 
     </Grid>
 </Window>

@@ -32,11 +32,11 @@ namespace SjakkGUI
     /// 
     public partial class MainWindow : Window
     {
-        EventWaitHandle ewhChessAndRobotWork;
+        EventWaitHandle ewhChessWork;
         EventWaitHandle ewhSendCommandToRobot;
         UCI myChessEngine;
         string enginePath = @"stockfish_14053109_32bit.exe";
-        Thread threadChessAndRobotWork;
+        Thread threadChessWork;
         Thread threadRobot;
 
         static string sysID = string.Empty;
@@ -44,41 +44,47 @@ namespace SjakkGUI
         static Controller controller;
         static Mastership master;
 
+        static Border oldBorderFrom = null;
+        static Border oldBorderTo = null;
+
+        static Brush oldToBrush = null;
+        static Brush oldFromBrush = null;
+
 
         public MainWindow()
         {
-            InitializeComponent();
 
-            CreateController();
+                InitializeComponent();
 
-            ewhChessAndRobotWork = new EventWaitHandle(false, EventResetMode.AutoReset);
-            threadChessAndRobotWork = new Thread(chessAndRobotWork);
-            threadChessAndRobotWork.IsBackground = true;
-            threadChessAndRobotWork.Start();
+                CreateController();
 
+                ewhChessWork = new EventWaitHandle(false, EventResetMode.AutoReset);
+                threadChessWork = new Thread(chessWork);
+                threadChessWork.IsBackground = true;
+                threadChessWork.Start();
 
-            // Not to be used for the moment/////////////////////////////////////////////
-            //ewhSendCommandToRobot = new EventWaitHandle(false, EventResetMode.AutoReset);
-            //threadRobot = new Thread(SendCommandToRobot);
-            //threadRobot.IsBackground = true;
-            //threadRobot.Start();
-            /////////////////////////////////////////////////////////////////////////////
+                lblHumanRobotTurn.Content = "Human";
 
-            myChessEngine = new UCI();
-            myChessEngine.InitEngine(enginePath, "");
-            myChessEngine.Depth = "4";
+                // Not to be used for the moment/////////////////////////////////////////////
+                //ewhSendCommandToRobot = new EventWaitHandle(false, EventResetMode.AutoReset);
+                //threadRobot = new Thread(SendCommandToRobot);
+                //threadRobot.IsBackground = true;
+                //threadRobot.Start();
+                /////////////////////////////////////////////////////////////////////////////
 
-            lblMode.Content = "";
+                myChessEngine = new UCI();
+                myChessEngine.InitEngine(enginePath, "");
+                myChessEngine.Depth = "4";
 
-            // Event triggerd when operating mode changes
-            controller.OperatingModeChanged += controller_OperatingModeChanged;
+                lblMode.Content = "";
 
-            Brush firstBrush = Brushes.LightGray;
-            Brush secondBrush = Brushes.Gray;
+                // Event triggerd when operating mode changes
+                controller.OperatingModeChanged += controller_OperatingModeChanged;
 
+                Brush firstBrush = Brushes.LightGray;
+                Brush secondBrush = Brushes.Gray;
 
-            ColorChessboard(firstBrush, secondBrush);
-      
+                ColorChessboard(firstBrush, secondBrush);
         }
 
         private void ColorChessboard(Brush firstBrush, Brush secondBrush)
@@ -91,7 +97,7 @@ namespace SjakkGUI
             Border_f8.Background = secondBrush;
             Border_g8.Background = firstBrush;
             Border_h8.Background = secondBrush;
-            Border_a7.Background =  secondBrush;
+            Border_a7.Background = secondBrush;
             Border_b7.Background = firstBrush;
             Border_c7.Background = secondBrush;
             Border_d7.Background = firstBrush;
@@ -149,7 +155,7 @@ namespace SjakkGUI
             Border_h1.Background = firstBrush;
         }
 
-        
+
 
         private void CreateController()
         {
@@ -173,7 +179,7 @@ namespace SjakkGUI
                     RobotWare = ""
                 });
             }
-    
+
             //sysID = controllers[0].SystemId.ToString();
             //controller = ControllerFactory.CreateFrom(controllers[0]);
             //controller.Logon(UserInfo.DefaultUser);
@@ -191,12 +197,27 @@ namespace SjakkGUI
 
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
-            ewhChessAndRobotWork.Set();
+            ewhChessWork.Set();
         }
 
 
-        private void chessAndRobotWork(object obj)
+        private void chessWork(object obj)
         {
+            // true if it's the robots turn
+            bool robot = false;
+            string move = string.Empty;
+
+            int x1;
+            int x2;
+            int x3;
+            int y1;
+            int y2;
+            int y3;
+            bool takePiece;
+            int[,] positionInt;
+            char[,] positionChar;
+            string castling;
+            bool enPassant;
 
             Border[,] borders = new Border[8, 8] {{ Border_a1 , Border_b1 , Border_c1 , Border_d1 , Border_e1 , Border_f1 , Border_g1 , Border_h1 },
                                                   { Border_a2 , Border_b2 , Border_c2 , Border_d2 , Border_e2 , Border_f2 , Border_g2 , Border_h2 },
@@ -212,54 +233,84 @@ namespace SjakkGUI
             ABB.Robotics.Controllers.RapidDomain.Num rapidNumxCord2;
             ABB.Robotics.Controllers.RapidDomain.Num rapidNumyCord1;
             ABB.Robotics.Controllers.RapidDomain.Num rapidNumyCord2;
+            ABB.Robotics.Controllers.RapidDomain.Num rapidNumxEnPassant;
+            ABB.Robotics.Controllers.RapidDomain.Num rapidNumyEnPassant;
+            ABB.Robotics.Controllers.RapidDomain.Bool rapidBoolEnPassantActive;
             ABB.Robotics.Controllers.RapidDomain.Bool rapidBoolcapturePiece;
             ABB.Robotics.Controllers.RapidDomain.Bool rapidBoolcheckMate;
             ABB.Robotics.Controllers.RapidDomain.Bool rapidBoolwaitForTurn;
+            ABB.Robotics.Controllers.RapidDomain.String rapidStringCastlingState;
 
             //Make a variable that is connected to the variable in the robotcontroller 
             ABB.Robotics.Controllers.RapidDomain.RapidData rdxCoord1 = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "xCoord1");
             ABB.Robotics.Controllers.RapidDomain.RapidData rdyCoord1 = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "yCoord1");
             ABB.Robotics.Controllers.RapidDomain.RapidData rdxCoord2 = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "xCoord2");
             ABB.Robotics.Controllers.RapidDomain.RapidData rdyCoord2 = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "yCoord2");
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdxEnPassant = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "xEnPassant");
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdyEnPassant = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "yEnPassant");
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdEnPassantActive = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "EnPassantActive");
             ABB.Robotics.Controllers.RapidDomain.RapidData rdcapturePiece = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "capturePiece");
             ABB.Robotics.Controllers.RapidDomain.RapidData rdcheckMate = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "checkMate");
             ABB.Robotics.Controllers.RapidDomain.RapidData rdwaitForTurn = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "waitForTurn");
+            ABB.Robotics.Controllers.RapidDomain.RapidData rdCastlingState = controller.Rapid.GetRapidData("T_ROB1", "SjakkTest", "CastlingState");
 
+            // Event that fires when the waitForTurn variable changes value
             rdwaitForTurn.ValueChanged += rdwaitForTurn_ValueChanged;
-  
+
             while (true)
             {
-                ewhChessAndRobotWork.WaitOne();
+                ewhChessWork.WaitOne();
 
-                this.Dispatcher.Invoke((Action)(() =>
+                if (robot)
                 {
-                    // Sender inn sjakktrekket frå tekstboks.
-                    myChessEngine.EngineCommandMove(tbNextMove.Text);
-                }));
+                    // The best move the robot can make
+                    move = myChessEngine.BestMove;
+                    // Sends in the move to the UCI object. Gets out coordinates to be sent to robotcontroller
+                    myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, move);
 
-                // Wait for calculations to finish
-                myChessEngine.ewhCalculating.WaitOne();
 
-                this.Dispatcher.Invoke((Action)(() =>
+                    myChessEngine.EngineCommandMove(move);
+
+                    // Wait for calculations to finish
+                    myChessEngine.ewhCalculating.WaitOne();
+
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        tbConsole.Clear();
+                        tbConsole.Text = "Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove;
+                        tbNextMove.Text = myChessEngine.BestMove;
+
+                        lblHumanRobotTurn.Content = "Human";
+                    }));
+                    robot = false;
+                }
+                else
                 {
-                    tbConsole.Clear();
-                    tbConsole.Text = "Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove;
-                    tbNextMove.Text = myChessEngine.BestMove;
-                }));
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        // Takes in the move from the human player
+                        move = tbNextMove.Text;
+                        myChessEngine.EngineCommandMove(move);
+                    }));
 
-                int x1;
-                int x2;
-                int x3;
-                int y1;
-                int y2;
-                int y3;
-                bool takePiece;
-                int[,] positionInt;
-                char[,] positionChar;
-                string castling;
-                bool enPassant;
-                // Coordinates to be sent to robotcontroller
-                myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3,out y3,out takePiece ,out positionInt,out positionChar, out castling, out enPassant);
+                    // Wait for calculations to finish
+                    myChessEngine.ewhCalculating.WaitOne();
+
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        tbConsole.Clear();
+                        tbConsole.Text = "Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove;
+                        //tbNextMove.Text = myChessEngine.BestMove;
+                        tbNextMove.Clear();
+
+                        lblHumanRobotTurn.Content = "Robot";
+                    }));
+
+                    // Coordinates to be sent to robotcontroller
+                    myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, move);
+
+                    robot = true;
+                }
 
                 // DEBUG
                 writeChessboardToTextboxInt(positionInt);
@@ -268,14 +319,32 @@ namespace SjakkGUI
                 // Write the current position to the chessboard graphic in the GUI
                 ChessboardGraphic(borders, x1, x2, x3, y1, y2, y3, castling, enPassant);
 
+
+
                 //// Read the current value from the robotcontroller
                 rapidBoolcapturePiece = (ABB.Robotics.Controllers.RapidDomain.Bool)rdcapturePiece.Value;
                 rapidBoolcheckMate = (ABB.Robotics.Controllers.RapidDomain.Bool)rdcheckMate.Value;
                 rapidBoolwaitForTurn = (ABB.Robotics.Controllers.RapidDomain.Bool)rdwaitForTurn.Value;
+                rapidBoolEnPassantActive = (ABB.Robotics.Controllers.RapidDomain.Bool)rdEnPassantActive.Value;
                 rapidNumxCord1 = (ABB.Robotics.Controllers.RapidDomain.Num)rdxCoord1.Value;
                 rapidNumyCord1 = (ABB.Robotics.Controllers.RapidDomain.Num)rdyCoord1.Value;
                 rapidNumxCord2 = (ABB.Robotics.Controllers.RapidDomain.Num)rdxCoord2.Value;
                 rapidNumyCord2 = (ABB.Robotics.Controllers.RapidDomain.Num)rdyCoord2.Value;
+                rapidNumxEnPassant = (ABB.Robotics.Controllers.RapidDomain.Num)rdxEnPassant.Value;
+                rapidNumyEnPassant = (ABB.Robotics.Controllers.RapidDomain.Num)rdyEnPassant.Value;
+                rapidStringCastlingState = (ABB.Robotics.Controllers.RapidDomain.String)rdCastlingState.Value;
+
+                //                ROKADE:
+                //    VAR string CastlingState;
+
+
+                ///////////////////////////
+                //EN PASSANT
+                ///////////////////////////
+                //    VAR bool EnPassantActive;
+                //    VAR num xEnPassant;
+                //    VAR num yEnPassant;
+                
 
                 //rapidBool = (ABB.Robotics.Controllers.RapidDomain.Bool)rd.Value;
                 //rapidNum = (ABB.Robotics.Controllers.RapidDomain.Num)x_1.Value;
@@ -284,15 +353,22 @@ namespace SjakkGUI
                 //bool boolValue = rapidBool.Value;
                 //int numValue = (int)rapidNum.Value;
 
+
+
+
                 // New values to be written to the robotcontroller
                 rapidBoolcapturePiece.Value = takePiece;
                 rapidBoolcheckMate.Value = false;
                 rapidBoolwaitForTurn.Value = false;
+                rapidBoolEnPassantActive.Value = enPassant;
                 rapidNumxCord1.Value = x1;
                 rapidNumyCord1.Value = y1;
                 rapidNumxCord2.Value = x2;
                 rapidNumyCord2.Value = y2;
-                
+                rapidNumxEnPassant.Value = x3;
+                rapidNumyEnPassant.Value = y3;
+                rapidStringCastlingState.Value = castling;
+
                 //Request mastership of Rapid before writing to the controller
                 master = Mastership.Request(controller.Rapid);
                 //Change: controller is repaced by aController
@@ -300,12 +376,17 @@ namespace SjakkGUI
                 rdyCoord1.Value = rapidNumyCord1;
                 rdxCoord2.Value = rapidNumxCord2;
                 rdyCoord2.Value = rapidNumyCord2;
+                rdxEnPassant.Value = rapidNumxEnPassant;
+                rdyEnPassant.Value = rapidNumyEnPassant;
+                rdEnPassantActive.Value = rapidBoolEnPassantActive;
                 rdcapturePiece.Value = rapidBoolcapturePiece;
                 rdcheckMate.Value = rapidBoolcheckMate;
-                rdwaitForTurn.Value = rapidBoolwaitForTurn; 
+                rdwaitForTurn.Value = rapidBoolwaitForTurn;
+                rdCastlingState.Value = rapidStringCastlingState;
                 //Release mastership as soon as possible
                 master.ReleaseOnDispose = true;
                 master.Dispose();
+
             }
         }
 
@@ -333,7 +414,13 @@ namespace SjakkGUI
                     borders[y1, x1].Child = null;
                     // Paste piece in new position
                     borders[y2, x2].Child = image;
-                }
+
+
+                    //////////////////////////////////////////////////////////// Changes the color of the squares to the piece that has moved
+
+                    PieceMovedColor(borders, x1, x2, y1, y2);
+
+                } 
                 else if (castling == "WShort")
                 {
                     Image image = new Image();
@@ -349,6 +436,10 @@ namespace SjakkGUI
                     borders[0, 7].Child = null;
                     // Paste rook in new position
                     borders[0, 5].Child = image;
+
+                    //////////////////////////////////////////////////////////// Changes the color of the squares to the piece that has moved
+                    PieceMovedColor(borders, x1, x2, y1, y2);
+
                 }
                 else if (castling == "WLong")
                 {
@@ -359,6 +450,10 @@ namespace SjakkGUI
                     image = (Image)borders[0, 0].Child;
                     borders[0, 0].Child = null;
                     borders[0, 3].Child = image;
+
+
+                    //////////////////////////////////////////////////////////// Changes the color of the squares to the piece that has moved
+                    PieceMovedColor(borders, x1, x2, y1, y2);
                 }
                 else if (castling == "BShort")
                 {
@@ -369,6 +464,10 @@ namespace SjakkGUI
                     image = (Image)borders[7, 7].Child;
                     borders[7, 7].Child = null;
                     borders[7, 5].Child = image;
+
+
+                    //////////////////////////////////////////////////////////// Changes the color of the squares to the piece that has moved
+                    PieceMovedColor(borders, x1, x2, y1, y2);
                 }
                 else if (castling == "BLong")
                 {
@@ -379,6 +478,10 @@ namespace SjakkGUI
                     image = (Image)borders[7, 0].Child;
                     borders[7, 0].Child = null;
                     borders[7, 3].Child = image;
+
+
+                    //////////////////////////////////////////////////////////// Changes the color of the squares to the piece that has moved
+                    PieceMovedColor(borders, x1, x2, y1, y2);
                 }
 
                 if (enPasant)
@@ -394,23 +497,53 @@ namespace SjakkGUI
                     borders[y2, x2].Child = image;
                     // Delete piece en pasant
                     borders[y3, x3].Child = null;
+
+
+                    //////////////////////////////////////////////////////////// Changes the color of the squares to the piece that has moved
+                    PieceMovedColor(borders, x1, x2, y1, y2);
                 }
             }));
         }
 
+        private static void PieceMovedColor(Border[,] borders, int x1, int x2, int y1, int y2)
+        {
+            if (oldBorderFrom != null)
+            {
+                // Chnges the squares color back to the old color
+                oldBorderFrom.Background = oldFromBrush;
+                oldBorderTo.Background = oldToBrush;
+            }
+
+            // Copys the color of the square
+            oldToBrush = borders[y2, x2].Background;
+            oldFromBrush = borders[y1, x1].Background;
+
+            // Change the color of the square
+            borders[y2, x2].Background = Brushes.LightPink;
+            borders[y1, x1].Background = Brushes.LightPink;
+
+            // remebers the last border
+            oldBorderFrom = borders[y1, x1];
+            oldBorderTo = borders[y2, x2];
+        }
+
         private void rdwaitForTurn_ValueChanged(object sender, DataValueChangedEventArgs e)
         {
+
+            // Dette er funkjsonen som leser den boolske verdien for at roboten er ferdig å flytte. Kommenterer den vekk midlertidig når eg tester ut nye funksjoner.
+            /*
             ABB.Robotics.Controllers.RapidDomain.Bool rapidBoolwaitForTurn;
             RapidData rdwaitForTurn = (RapidData)sender;
             rapidBoolwaitForTurn = (ABB.Robotics.Controllers.RapidDomain.Bool)rdwaitForTurn.Value;
             bool variabel = rapidBoolwaitForTurn.Value;
 
             if (variabel)
-            ewhChessAndRobotWork.Set();
+            ewhChessWork.Set();
+            */
         }
 
 
-        
+
 
         private void writeChessboardToTextboxInt(int[,] position)
         {
@@ -452,7 +585,7 @@ namespace SjakkGUI
                     tbConsole.Text += (char)(97 + k) + " | ";
                 }));
             }
-  
+
         }
 
         private void writeChessboardToTextboxChar(char[,] position, bool takePiece, string castling)
@@ -484,8 +617,8 @@ namespace SjakkGUI
                         else
                         {
                             if (position[i, j] == ' ')
-                            tbConsole.Text += position[i, j].ToString() + "   |  ";
-                             else
+                                tbConsole.Text += position[i, j].ToString() + "   |  ";
+                            else
                                 tbConsole.Text += position[i, j].ToString() + "  |  ";
                         }
                     }));
@@ -509,13 +642,13 @@ namespace SjakkGUI
 
             this.Dispatcher.Invoke((Action)(() =>
             {
-                tbConsole.Text += "\n\nTake piece = " + takePiece;
+                tbConsole.Text += "\n\nCapture piece = " + takePiece;
             }));
 
-                      this.Dispatcher.Invoke((Action)(() =>
-            {
-                tbConsole.Text += "\n\nCastling = " + castling;
-            }));
+            this.Dispatcher.Invoke((Action)(() =>
+  {
+      tbConsole.Text += "\n\nCastling = " + castling;
+  }));
         }
 
         /*

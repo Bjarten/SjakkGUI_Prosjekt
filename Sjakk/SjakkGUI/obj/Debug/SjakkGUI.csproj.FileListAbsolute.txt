@@ -43,7 +43,6 @@ C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\SjakkGUI.pdb
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\bin\Debug\SjakkGUI.exe
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\bin\Debug\SjakkGUI.pdb
-C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\SjakkGUI.csprojResolveAssemblyReference.cache
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\MainWindow.baml
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\MainWindow.g.cs
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\App.g.cs
@@ -51,3 +50,8 @@ C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\SjakkGUI.g.resources
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\SjakkGUI.Properties.Resources.resources
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\SjakkGUI.csproj.GenerateResource.Cache
+C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\bin\Debug\SjakkGUI.exe.manifest
+C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\bin\Debug\SjakkGUI.application
+C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\SjakkGUI.exe.manifest
+C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\SjakkGUI.application
+C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\Debug\SjakkGUI.csprojResolveAssemblyReference.cache
