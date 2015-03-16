@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace SjakkGUI
 {
@@ -20,7 +21,10 @@ namespace SjakkGUI
         string considering = string.Empty;
         string lastMove = string.Empty;
         string depth = "20";
-        string earlierMoves = String.Empty;
+        string earlierMoves = string.Empty;
+        // The current score
+        string score = string.Empty;
+
 
         int[,] chessboardInt = new int[8, 8] {{ 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 },
                                            { 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 },
@@ -75,6 +79,12 @@ namespace SjakkGUI
             set { bestMove = value; }
         }
 
+        public string Score
+        {
+            get { return score; }
+            set { score = value; }
+        }
+
         //////////////////////////////////////////////////////////////////////////
         // CONSTANTS
         //////////////////////////////////////////////////////////////////////////
@@ -117,7 +127,7 @@ namespace SjakkGUI
             // start new game
             EngineCommand(kSetUCIMode);
 
-            //DEBUG
+            //DEBUG write to debugfile
             //EngineCommand("setoption name Write Debug Log value true");
 
             ResetEngine();
@@ -162,20 +172,41 @@ namespace SjakkGUI
 
             String t = outLine.Data;
 
-
-            if (t.Contains("bestmove"))
+            if (t.Contains(" cp "))
             {
-                String bestmove = t.Substring(9, 4);
-                this.BestMove = bestmove;
+                
+            }
+
+            if (Regex.IsMatch(t,@"(?<= cp )\d{1,3}"))
+            {
+                this.Score = Regex.Match(t, @"(?<= cp )\d{1,4}").Value;
+            }
+            else if (Regex.IsMatch(t,@"(?<= cp )-\d{1,3}"))
+            {
+                this.Score = Regex.Match(t, @"(?<= cp )-\d{1,4}").Value;
+            }
+
+            if (Regex.IsMatch(t, @"(?<=bestmove )(\w\d\w\d\w|\w\d\w\d)"))
+            {
+                this.BestMove = Regex.Match(t, @"(?<=bestmove )(\w\d\w\d\w|\w\d\w\d)").Value;
                 ewhCalculating.Set();
             }
-            else if (t.Contains(" pv "))
-            {
-                String considerering = t;
-                Int32 length = considerering.Length;
-                Int32 idxofline = considerering.IndexOf(" pv ") + 4;
-                this.Considering += considerering.Substring(idxofline, length - idxofline) + "\n";
-            }
+
+            //if (t.Contains("bestmove"))
+            //{
+            //    String bestmove = t.Substring(9, 4);
+            //    this.BestMove = bestmove;
+            //    ewhCalculating.Set();
+            //}
+            //else if (t.Contains(" pv "))
+            //{
+            //    String considerering = t;
+            //    Int32 length = considerering.Length;
+            //    Int32 idxofline = considerering.IndexOf(" pv ") + 4;
+            //    this.Considering += considerering.Substring(idxofline, length - idxofline) + "\n";
+            //}
+
+
         }
 
         public void EngineCommand(String cmd)
