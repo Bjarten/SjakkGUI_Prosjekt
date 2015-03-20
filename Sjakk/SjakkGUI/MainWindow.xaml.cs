@@ -23,8 +23,7 @@ using ABB.Robotics.Controllers;
 using ABB.Robotics.Controllers.Discovery;
 using ABB.Robotics.Controllers.RapidDomain;
 
-using System.Net;
-using System.Net.Sockets;
+
 
 using System.Text.RegularExpressions;
 
@@ -47,6 +46,8 @@ namespace SjakkGUI
         UCI myChessEngine;
         string enginePath = @"stockfish_14053109_32bit.exe";
         Thread threadChessWork;
+
+        static bool robot = false;
 
         // For communicating with Scorpion Vision 
         SerialPort sPort;
@@ -92,14 +93,20 @@ namespace SjakkGUI
                 lblHumanRobotTurn.Content = "Human";
 
                 myChessEngine = new UCI();
-                myChessEngine.InitEngine(enginePath, "");
-                myChessEngine.Depth = "4";
+                myChessEngine.InitEngine(enginePath, "");             
 
                 lblMode.Content = "";
 
                 // Event triggerd when operating mode changes
                 controller.OperatingModeChanged += controller_OperatingModeChanged;
+        
+            // Remove pictures from grid. Are goning to use the for promotion
+               MainGrid.Children.Remove(Imagebq1);
+               MainGrid.Children.Remove(Imagewq1);
+               Imagebq1.Visibility = Visibility.Visible;
+               Imagewq1.Visibility = Visibility.Visible;
 
+            
                 // Set board style
                 Brush firstBrush = Brushes.LightGray;
                 Brush secondBrush = Brushes.Gray;
@@ -109,8 +116,18 @@ namespace SjakkGUI
                 cbChessBoardStyleColorRightSide.Color = Colors.Gray;
 
                 ColorChessboard(firstBrush, secondBrush);
-        }
 
+
+                // Depth combobox
+                cbDepth.SelectionChanged += cbDepth_SelectionChanged;
+                cbDepth.SelectedIndex = 3;
+
+                // Skill Level combobox
+                cbSkillLevel.SelectionChanged += cbSkillLevel_SelectionChanged;
+                cbSkillLevel.SelectedIndex = 0;
+
+              
+        }
 
         private void ColorChessboard(Brush firstBrush, Brush secondBrush)
         {
@@ -229,7 +246,7 @@ namespace SjakkGUI
         private void chessWork(object obj)
         {
             // true if it's the robots turn
-            bool robot = false;
+            robot = false;
             string move = string.Empty;
 
             int x1;
@@ -243,6 +260,7 @@ namespace SjakkGUI
             char[,] positionChar;
             string castling;
             bool enPassant;
+            string promotion;
 
             Border[,] borders = new Border[8, 8] {{ Border_a1 , Border_b1 , Border_c1 , Border_d1 , Border_e1 , Border_f1 , Border_g1 , Border_h1 },
                                                   { Border_a2 , Border_b2 , Border_c2 , Border_d2 , Border_e2 , Border_f2 , Border_g2 , Border_h2 },
@@ -291,7 +309,7 @@ namespace SjakkGUI
                     // The best move the robot can make
                     move = myChessEngine.BestMove;
                     // Sends in the move to the UCI object. Gets out coordinates to be sent to robotcontroller
-                    myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, move);
+                    myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, out promotion, move, robot);
 
 
                     myChessEngine.EngineCommandMove(move);
@@ -299,17 +317,21 @@ namespace SjakkGUI
                     // Wait for calculations to finish
                     myChessEngine.ewhCalculating.WaitOne();
 
-                    double score = 0.5 + (Convert.ToDouble(myChessEngine.Score) * -1) / 2000; // max score 10 pawns
+
+                    double scoreFormated = 0.5 + Convert.ToDouble(myChessEngine.Score) / 2000; // Max 10 pawns
                     
 
                     this.Dispatcher.Invoke((Action)(() =>
                     {
-                        Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + score);
+                        lblBlackScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1)/100);
+                        lblWhiteScore.Content = string.Format("{0:F1}",Convert.ToDouble(myChessEngine.Score)/100);
+
+                        Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + scoreFormated);
                         tbNextMove.Text = myChessEngine.BestMove;
 
                         lblHumanRobotTurn.Content = "Human";
 
-                        ScoreAnimation(score);
+                        ScoreAnimation(scoreFormated);
                
                     }));
                     robot = false;
@@ -330,32 +352,36 @@ namespace SjakkGUI
                     // Lag metode av denne biten
 
                     // Get score
-                    double score = 0.5 + Convert.ToDouble(myChessEngine.Score)/2000;
+                    double scoreFormated = 0.5 + (Convert.ToDouble(myChessEngine.Score) * -1) / 2000; // max score 10 pawns
+
 
                     this.Dispatcher.Invoke((Action)(() =>
                     {
-                        Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + score);
+                        lblBlackScore.Content = string.Format("{0:F1}", Convert.ToDouble(myChessEngine.Score)/100);
+                        lblWhiteScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1)/100);
+
+                        Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + scoreFormated);
                         //tbNextMove.Text = myChessEngine.BestMove;
                         tbNextMove.Clear();
 
-                        ScoreAnimation(score);
+                        ScoreAnimation(scoreFormated);
 
                         lblHumanRobotTurn.Content = "Robot";
                     }));
 
                     // Coordinates to be sent to robotcontroller
-                    myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, move);
+                    myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, out promotion, move, robot);
 
                     robot = true;
                 }
 
 #if (DEBUG)
                 writeChessboardToDEBUGint(positionInt);
-                writeChessboardToDEBUGChar(positionChar, takePiece, castling);
+                writeChessboardToDEBUGChar(positionChar, takePiece, castling, promotion);
 #endif
 
                 // Write the current position to the chessboard graphic in the GUI
-                ChessboardGraphic(borders, x1, x2, x3, y1, y2, y3, castling, enPassant);
+                ChessboardGraphic(borders, x1, x2, x3, y1, y2, y3, castling, enPassant, promotion);
 
 
 
@@ -430,20 +456,22 @@ namespace SjakkGUI
 
         private void ScoreAnimation(double score)
         {
-            PointAnimation myPointAnimation = new PointAnimation();
-            myPointAnimation.From = lgbScore.StartPoint;
-            myPointAnimation.To = new Point(score, 0.5);
 
-            myPointAnimation.Duration = new Duration(TimeSpan.FromSeconds(1));
+                PointAnimation myPointAnimation = new PointAnimation();
+                myPointAnimation.From = lgbScore.StartPoint;
+                myPointAnimation.To = new Point(score, 0.5);
 
-            myStoryboard = new Storyboard();
-            myStoryboard.Children.Add(myPointAnimation);
+                myPointAnimation.Duration = new Duration(TimeSpan.FromSeconds(1));
 
-            Storyboard.SetTargetName(myPointAnimation, "lgbScore");
+                myStoryboard = new Storyboard();
+                myStoryboard.Children.Add(myPointAnimation);
 
-            Storyboard.SetTargetProperty(myPointAnimation, new PropertyPath(LinearGradientBrush.StartPointProperty));
+                Storyboard.SetTargetName(myPointAnimation, "lgbScore");
 
-            myStoryboard.Begin(this);
+                Storyboard.SetTargetProperty(myPointAnimation, new PropertyPath(LinearGradientBrush.StartPointProperty));
+
+                myStoryboard.Begin(this); 
+
         }
 
         /// <summary>
@@ -455,7 +483,7 @@ namespace SjakkGUI
         /// <param name="y1"></param>
         /// <param name="y2"></param>
         /// <param name="castling"></param>
-        private void ChessboardGraphic(Border[,] borders, int x1, int x2, int x3, int y1, int y2, int y3, string castling, bool enPasant)
+        private void ChessboardGraphic(Border[,] borders, int x1, int x2, int x3, int y1, int y2, int y3, string castling, bool enPasant, string promotion)
         {
             this.Dispatcher.Invoke((Action)(() =>
             {
@@ -558,6 +586,23 @@ namespace SjakkGUI
                     //////////////////////////////////////////////////////////// Changes the color of the squares to the piece that has moved
                     PieceMovedColor(borders, x1, x2, y1, y2);
                 }
+
+                if(promotion == "WPromotion")
+                {
+                    Image image = new Image();
+                    // delete the piece in old position
+                    borders[y1, x1].Child = null;
+                    // Paste piece in new position
+                    borders[y2, x2].Child = Imagewq1;
+                }
+                else if (promotion == "BPromotion")
+                {
+                    Image image = new Image();
+                    // delete the piece in old position
+                    borders[y1, x1].Child = null;
+                    // Paste piece in new position
+                    borders[y2, x2].Child = Imagebq1;
+                }
             }));
         }
 
@@ -626,7 +671,7 @@ namespace SjakkGUI
 
         }
 
-        private void writeChessboardToDEBUGChar(char[,] position, bool takePiece, string castling)
+        private void writeChessboardToDEBUGChar(char[,] position, bool takePiece, string castling, string promotion)
         {
                 Debug.Write("\n\n");
 
@@ -663,15 +708,13 @@ namespace SjakkGUI
                     Debug.Write((char)(97 + k) + "     ");
             }
 
-            this.Dispatcher.Invoke((Action)(() =>
-            {
-                Debug.Write("\n\nCapture piece = " + takePiece);
-            }));
 
-            this.Dispatcher.Invoke((Action)(() =>
-            {
+                Debug.Write("\n\nCapture piece = " + takePiece);
+    
                 Debug.Write("\n\nCastling = " + castling);
-            }));
+
+                Debug.Write("\n\nPromotion = " + promotion);
+       
         }
 
 
@@ -791,14 +834,241 @@ namespace SjakkGUI
 
             ColorChessboard(firstBrush, secondBrush);
         }
+
         private void sPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
             visionSystemInData = sp.ReadExisting();
         }
 
+        void cbDepth_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int caseSwitch = cbDepth.SelectedIndex;
+            switch (caseSwitch)
+            {
+                case 0:
+                    myChessEngine.Depth = "1";
+                    break;
+                case 1:
+                    myChessEngine.Depth = "2";
+                    break;
+                case 2:
+                    myChessEngine.Depth = "3";
+                    break;
+                case 3:
+                    myChessEngine.Depth = "4";
+                    break;
+                case 4:
+                    myChessEngine.Depth = "5";
+                    break;
+                case 5:
+                    myChessEngine.Depth = "6";
+                    break;
+                case 6:
+                    myChessEngine.Depth = "7";
+                    break;
+                case 7:
+                    myChessEngine.Depth = "8";
+                    break;
+                case 8:
+                    myChessEngine.Depth = "9";
+                    break;
+                case 9:
+                    myChessEngine.Depth = "10";
+                    break;
+                case 10:
+                    myChessEngine.Depth = "11";
+                    break;
+                case 11:
+                    myChessEngine.Depth = "12";
+                    break;
+                case 12:
+                    myChessEngine.Depth = "13";
+                    break;
+                case 13:
+                    myChessEngine.Depth = "14";
+                    break;
+                case 14:
+                    myChessEngine.Depth = "15";
+                    break;
+                case 15:
+                    myChessEngine.Depth = "16";
+                    break;
+                case 16:
+                    myChessEngine.Depth = "17";
+                    break;
+                case 17:
+                    myChessEngine.Depth = "18";
+                    break;
+                case 18:
+                    myChessEngine.Depth = "19";
+                    break;
+                case 19:
+                    myChessEngine.Depth = "20";
+                    break;
+                case 20:
+                    myChessEngine.Depth = "21";
+                    break;
+                case 21:
+                    myChessEngine.Depth = "22";
+                    break;
+                case 22:
+                    myChessEngine.Depth = "23";
+                    break;
+                case 23:
+                    myChessEngine.Depth = "24";
+                    break;
+                case 24:
+                    myChessEngine.Depth = "25";
+                    break;
+                case 25:
+                    myChessEngine.Depth = "26";
+                    break;
+            }
+        }
 
-    }
+        void cbSkillLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int caseSwitch = cbSkillLevel.SelectedIndex;
+            switch (caseSwitch)
+            {
+                case 0:
+                    myChessEngine.SkillLevel("0");
+                    break;
+                case 1:
+                    myChessEngine.SkillLevel("1");
+                    break;
+                case 2:
+                    myChessEngine.SkillLevel("2");
+                    break;
+                case 3:
+                    myChessEngine.SkillLevel("3");
+                    break;
+                case 4:
+                    myChessEngine.SkillLevel("4");
+                    break;
+                case 5:
+                    myChessEngine.SkillLevel("5");
+                    break;
+                case 6:
+                    myChessEngine.SkillLevel("6");
+                    break;
+                case 7:
+                    myChessEngine.SkillLevel("7");
+                    break;
+                case 8:
+                    myChessEngine.SkillLevel("8");
+                    break;
+                case 9:
+                    myChessEngine.SkillLevel("9");
+                    break;
+                case 10:
+                    myChessEngine.SkillLevel("10");
+                    break;
+                case 11:
+                    myChessEngine.SkillLevel("11");
+                    break;
+                case 12:
+                    myChessEngine.SkillLevel("12");
+                    break;
+                case 13:
+                    myChessEngine.SkillLevel("13");
+                    break;
+                case 14:
+                    myChessEngine.SkillLevel("14");
+                    break;
+                case 15:
+                    myChessEngine.SkillLevel("15");
+                    break;
+                case 16:
+                    myChessEngine.SkillLevel("16");
+                    break;
+                case 17:
+                    myChessEngine.SkillLevel("17");
+                    break;
+                case 18:
+                    myChessEngine.SkillLevel("18");
+                    break;
+                case 19:
+                    myChessEngine.SkillLevel("19");
+                    break;
+                case 20:
+                    myChessEngine.SkillLevel("20");
+                    break;
+            }
+        }
+
+        private void btnNewGame_Click(object sender, RoutedEventArgs e)
+        {
+
+            myChessEngine.NewGame();
+
+            robot = false;
+
+            // reset score
+            lblBlackScore.Content = "-0,2";
+            lblWhiteScore.Content = "0,2";
+            ScoreAnimation(0.492);
+
+            // Set board style
+            Brush firstBrush = Brushes.LightGray;
+            Brush secondBrush = Brushes.Gray;
+            movedFromToBrush = Brushes.LightPink;
+
+            cbChessBoardStyleColorLeftSide.Color = Colors.LightGray;
+            cbChessBoardStyleColorRightSide.Color = Colors.Gray;
+
+            ColorChessboard(firstBrush, secondBrush);
+
+            oldBorderFrom = null;
+            oldBorderTo = null;
+
+            oldToBrush = null;
+            oldFromBrush = null;
+
+            // Set up start position
+            foreach (Border border in gridChessboard.Children)
+            {
+                border.Child = null;
+            }
+
+            Border_a8.Child = ImagebrLeft;
+            Border_b8.Child = ImagebnLeft;
+            Border_c8.Child = ImagebbLeft;
+            Border_d8.Child = Imagebq;
+            Border_e8.Child = Imagebk;
+            Border_f8.Child = ImagebbRight;
+            Border_g8.Child = ImagebnRight;
+            Border_h8.Child = ImagebrRight;              
+            Border_a7.Child = Imagebp_1;              
+            Border_b7.Child = Imagebp_2;             
+            Border_c7.Child = Imagebp_3;              
+            Border_d7.Child = Imagebp_4;              
+            Border_e7.Child = Imagebp_5;              
+            Border_f7.Child = Imagebp_6;              
+            Border_g7.Child = Imagebp_7;
+            Border_h7.Child = Imagebp_8;              
+            Border_a2.Child = Imagewp_1;                 
+            Border_b2.Child = Imagewp_2;              
+            Border_c2.Child = Imagewp_3;              
+            Border_d2.Child = Imagewp_4;              
+            Border_e2.Child = Imagewp_5;              
+            Border_f2.Child = Imagewp_6;              
+            Border_g2.Child = Imagewp_7;              
+            Border_h2.Child = Imagewp_8;            
+            Border_a1.Child = ImagewrLeft;            
+            Border_b1.Child = ImagewnLeft;              
+            Border_c1.Child = ImagewbLeft;              
+            Border_d1.Child = Imagewq;               
+            Border_e1.Child = Imagewk;              
+            Border_f1.Child = ImagewbRight;              
+            Border_g1.Child = ImagewnRight;
+            Border_h1.Child = ImagewrRight;              
+                                            
+
+        }
+
+    }// MainWindow
 }
 
 

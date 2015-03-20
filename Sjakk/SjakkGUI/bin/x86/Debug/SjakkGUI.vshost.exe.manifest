@@ -82,14 +82,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SjakkGUI.exe" size="430592">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="SjakkGUI.exe" size="518656">
       <assemblyIdentity name="SjakkGUI" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>N+x3c0IG84SLfqBr0QLA+HpE1vYpegIioWJbklSs6S0=</dsig:DigestValue>
+        <dsig:DigestValue>tC2Kn7nuLTllXFQBj1/CCwaJRht/GsPNXhqN8dEZZQI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
