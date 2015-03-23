@@ -14,4 +14,3 @@ C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\x86\Debug\SjakkGUI.application
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\x86\Debug\SjakkGUI.exe
 C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\x86\Debug\SjakkGUI.pdb
-C:\Users\Bjarte\Documents\Visual Studio 2012\Projects\Sjakk\Sjakk\Sjakk\SjakkGUI\obj\x86\Debug\SjakkGUI.csprojResolveAssemblyReference.cache

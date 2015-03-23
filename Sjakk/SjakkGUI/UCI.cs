@@ -181,7 +181,7 @@ namespace SjakkGUI
             {
                 this.Score = Regex.Match(t, @"(?<= cp )\d{1,4}").Value;
             }
-            else if (Regex.IsMatch(t, @"(?<= cp )-\d{1,3}"))
+            else if (Regex.IsMatch(t, @"(?<= cp )-\d{1,4}"))
             {
                 this.Score = Regex.Match(t, @"(?<= cp )-\d{1,4}").Value;
             }

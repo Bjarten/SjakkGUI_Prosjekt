@@ -1,4 +1,4 @@
-﻿#define DEBUG
+﻿//#define DEBUG
 
 using System;
 using System.Collections.Generic;
@@ -42,7 +42,6 @@ namespace SjakkGUI
     public partial class MainWindow : Window
     {
         EventWaitHandle ewhChessWork;
-        EventWaitHandle ewhSendCommandToRobot;
         UCI myChessEngine;
         string enginePath = @"stockfish_14053109_32bit.exe";
         Thread threadChessWork;
@@ -69,64 +68,76 @@ namespace SjakkGUI
 
         static Storyboard myStoryboard;
 
-
+        // The virtual COM port used with Scorpion Vision
+        static string virtualCOM = "COM7";
 
         public MainWindow()
         {
 
-                InitializeComponent();
+            InitializeComponent();
 
-                CreateController();
+            CreateController();
 
-                // Setup for the COM port. Is used to communicate with Scorpion Vision System
-                
-#if (!DEBUG)
-                sPort = new SerialPort("COM7", 9600, Parity.None, 8, StopBits.One);
-                sPort.DataReceived += sPort_DataReceived;
-                sPort.Open();
+            // Setup for the COM port. Is used to communicate with Scorpion Vision System
+
+#if(!DEBUG)
+                string[] ports = SerialPort.GetPortNames();
+
+                if (ports.Contains(virtualCOM))
+                {
+                    sPort = new SerialPort(virtualCOM, 9600, Parity.None, 8, StopBits.One);
+                    sPort.DataReceived += sPort_DataReceived;
+                    sPort.Open();
+                }
+                else
+                {
+                    MessageBox.Show("Could not find " + virtualCOM + ". This is the virtual COM port used to connect with Scorpion Vision System. To set up a virtual COM use comcom");
+                }
 #endif
-                ewhChessWork = new EventWaitHandle(false, EventResetMode.AutoReset);
-                threadChessWork = new Thread(chessWork);
-                threadChessWork.IsBackground = true;
-                threadChessWork.Start();
 
-                lblHumanRobotTurn.Content = "Human";
+            ewhChessWork = new EventWaitHandle(false, EventResetMode.AutoReset);
+            threadChessWork = new Thread(chessWork);
+            threadChessWork.IsBackground = true;
+            threadChessWork.Start();
 
-                myChessEngine = new UCI();
-                myChessEngine.InitEngine(enginePath, "");             
+            lblHumanRobotTurn.Content = "Human";
 
-                lblMode.Content = "";
+            myChessEngine = new UCI();
+            myChessEngine.InitEngine(enginePath, "");
 
-                // Event triggerd when operating mode changes
-                controller.OperatingModeChanged += controller_OperatingModeChanged;
-        
+            lblShowMode.Content = "";
+
+            // Event triggerd when operating mode changes
+            controller.OperatingModeChanged += controller_OperatingModeChanged;
+
             // Remove pictures from grid. Are goning to use the for promotion
-               MainGrid.Children.Remove(Imagebq1);
-               MainGrid.Children.Remove(Imagewq1);
-               Imagebq1.Visibility = Visibility.Visible;
-               Imagewq1.Visibility = Visibility.Visible;
-
-            
-                // Set board style
-                Brush firstBrush = Brushes.LightGray;
-                Brush secondBrush = Brushes.Gray;
-                movedFromToBrush = Brushes.LightPink;
-
-                cbChessBoardStyleColorLeftSide.Color = Colors.LightGray;
-                cbChessBoardStyleColorRightSide.Color = Colors.Gray;
-
-                ColorChessboard(firstBrush, secondBrush);
+            MainGrid.Children.Remove(Imagebq1);
+            MainGrid.Children.Remove(Imagewq1);
+            Imagebq1.Visibility = Visibility.Visible;
+            Imagewq1.Visibility = Visibility.Visible;
 
 
-                // Depth combobox
-                cbDepth.SelectionChanged += cbDepth_SelectionChanged;
-                cbDepth.SelectedIndex = 3;
+            // Set board style
+            Brush firstBrush = Brushes.LightGray;
+            Brush secondBrush = Brushes.Gray;
+            movedFromToBrush = Brushes.LightPink;
 
-                // Skill Level combobox
-                cbSkillLevel.SelectionChanged += cbSkillLevel_SelectionChanged;
-                cbSkillLevel.SelectedIndex = 0;
+            cbChessBoardStyleColorLeftSide.Color = Colors.LightGray;
+            cbChessBoardStyleColorRightSide.Color = Colors.Gray;
 
-              
+            ColorChessboard(firstBrush, secondBrush);
+
+
+            // Depth combobox
+            cbDepth.SelectionChanged += cbDepth_SelectionChanged;
+            cbDepth.SelectedIndex = 3;
+
+            // Skill Level combobox
+            cbSkillLevel.SelectionChanged += cbSkillLevel_SelectionChanged;
+            cbSkillLevel.SelectedIndex = 0;
+
+
+            MainWindowWindow.KeyDown += MainWindowWindow_KeyDown;
         }
 
         private void ColorChessboard(Brush firstBrush, Brush secondBrush)
@@ -202,8 +213,12 @@ namespace SjakkGUI
         private void CreateController()
         {
             scanner = new NetworkScanner();
-
+#if(DEBUG)
             ControllerInfo[] controllers = scanner.GetControllers(NetworkScannerSearchCriterias.Virtual);
+#else
+                        ControllerInfo[] controllers = scanner.GetControllers(NetworkScannerSearchCriterias.Real);
+#endif
+
             controller = ControllerFactory.CreateFrom(controllers[0]);
             controller.Logon(UserInfo.DefaultUser);
 
@@ -233,7 +248,7 @@ namespace SjakkGUI
         {
             this.Dispatcher.Invoke((Action)(() =>
             {
-                lblMode.Content = e.NewMode;
+                lblShowMode.Content = e.NewMode;
             }));
         }
 
@@ -319,12 +334,12 @@ namespace SjakkGUI
 
 
                     double scoreFormated = 0.5 + Convert.ToDouble(myChessEngine.Score) / 2000; // Max 10 pawns
-                    
+
 
                     this.Dispatcher.Invoke((Action)(() =>
                     {
-                        lblBlackScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1)/100);
-                        lblWhiteScore.Content = string.Format("{0:F1}",Convert.ToDouble(myChessEngine.Score)/100);
+                        lblBlackScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1) / 100);
+                        lblWhiteScore.Content = string.Format("{0:F1}", Convert.ToDouble(myChessEngine.Score) / 100);
 
                         Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + scoreFormated);
                         tbNextMove.Text = myChessEngine.BestMove;
@@ -332,7 +347,7 @@ namespace SjakkGUI
                         lblHumanRobotTurn.Content = "Human";
 
                         ScoreAnimation(scoreFormated);
-               
+
                     }));
                     robot = false;
                 }
@@ -357,8 +372,8 @@ namespace SjakkGUI
 
                     this.Dispatcher.Invoke((Action)(() =>
                     {
-                        lblBlackScore.Content = string.Format("{0:F1}", Convert.ToDouble(myChessEngine.Score)/100);
-                        lblWhiteScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1)/100);
+                        lblBlackScore.Content = string.Format("{0:F1}", Convert.ToDouble(myChessEngine.Score) / 100);
+                        lblWhiteScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1) / 100);
 
                         Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + scoreFormated);
                         //tbNextMove.Text = myChessEngine.BestMove;
@@ -383,8 +398,6 @@ namespace SjakkGUI
                 // Write the current position to the chessboard graphic in the GUI
                 ChessboardGraphic(borders, x1, x2, x3, y1, y2, y3, castling, enPassant, promotion);
 
-
-
                 //// Read the current value from the robotcontroller
                 rapidBoolcapturePiece = (ABB.Robotics.Controllers.RapidDomain.Bool)rdcapturePiece.Value;
                 rapidBoolcheckMate = (ABB.Robotics.Controllers.RapidDomain.Bool)rdcheckMate.Value;
@@ -397,28 +410,6 @@ namespace SjakkGUI
                 rapidNumxEnPassant = (ABB.Robotics.Controllers.RapidDomain.Num)rdxEnPassant.Value;
                 rapidNumyEnPassant = (ABB.Robotics.Controllers.RapidDomain.Num)rdyEnPassant.Value;
                 rapidStringCastlingState = (ABB.Robotics.Controllers.RapidDomain.String)rdCastlingState.Value;
-
-                //                ROKADE:
-                //    VAR string CastlingState;
-
-
-                ///////////////////////////
-                //EN PASSANT
-                ///////////////////////////
-                //    VAR bool EnPassantActive;
-                //    VAR num xEnPassant;
-                //    VAR num yEnPassant;
-                
-
-                //rapidBool = (ABB.Robotics.Controllers.RapidDomain.Bool)rd.Value;
-                //rapidNum = (ABB.Robotics.Controllers.RapidDomain.Num)x_1.Value;
-
-                ////assign the value of the RAPID data to a local variable
-                //bool boolValue = rapidBool.Value;
-                //int numValue = (int)rapidNum.Value;
-
-
-
 
                 // New values to be written to the robotcontroller
                 rapidBoolcapturePiece.Value = takePiece;
@@ -457,20 +448,20 @@ namespace SjakkGUI
         private void ScoreAnimation(double score)
         {
 
-                PointAnimation myPointAnimation = new PointAnimation();
-                myPointAnimation.From = lgbScore.StartPoint;
-                myPointAnimation.To = new Point(score, 0.5);
+            PointAnimation myPointAnimation = new PointAnimation();
+            myPointAnimation.From = lgbScore.StartPoint;
+            myPointAnimation.To = new Point(score, 0.5);
 
-                myPointAnimation.Duration = new Duration(TimeSpan.FromSeconds(1));
+            myPointAnimation.Duration = new Duration(TimeSpan.FromSeconds(1));
 
-                myStoryboard = new Storyboard();
-                myStoryboard.Children.Add(myPointAnimation);
+            myStoryboard = new Storyboard();
+            myStoryboard.Children.Add(myPointAnimation);
 
-                Storyboard.SetTargetName(myPointAnimation, "lgbScore");
+            Storyboard.SetTargetName(myPointAnimation, "lgbScore");
 
-                Storyboard.SetTargetProperty(myPointAnimation, new PropertyPath(LinearGradientBrush.StartPointProperty));
+            Storyboard.SetTargetProperty(myPointAnimation, new PropertyPath(LinearGradientBrush.StartPointProperty));
 
-                myStoryboard.Begin(this); 
+            myStoryboard.Begin(this);
 
         }
 
@@ -504,7 +495,7 @@ namespace SjakkGUI
 
                     PieceMovedColor(borders, x1, x2, y1, y2);
 
-                } 
+                }
                 else if (castling == "WShort")
                 {
                     Image image = new Image();
@@ -587,7 +578,7 @@ namespace SjakkGUI
                     PieceMovedColor(borders, x1, x2, y1, y2);
                 }
 
-                if(promotion == "WPromotion")
+                if (promotion == "WPromotion")
                 {
                     Image image = new Image();
                     // delete the piece in old position
@@ -624,7 +615,7 @@ namespace SjakkGUI
             // Change the color of the square
             borders[y2, x2].Background = movedFromToBrush;
             borders[y1, x1].Background = movedFromToBrush;
-            
+
             // remebers the last border
             oldBorderFrom = borders[y1, x1];
             oldBorderTo = borders[y2, x2];
@@ -647,122 +638,77 @@ namespace SjakkGUI
 
         private void writeChessboardToDEBUGint(int[,] position)
         {
-                Debug.Write("\n");
+            Debug.Write("\n");
 
             for (int i = position.GetLength(0) - 1; i >= 0; i--)
             {
-                    Debug.Write(i + 1 + " ");
+                Debug.Write(i + 1 + " ");
 
                 for (int j = 0; j < position.GetLength(1); j++)
                 {
 
-                        if (j == 0)
-                            Debug.Write(" | " + position[i, j].ToString() + " | ");
-                        else
-                            Debug.Write(position[i, j].ToString() + " | ");
+                    if (j == 0)
+                        Debug.Write(" | " + position[i, j].ToString() + " | ");
+                    else
+                        Debug.Write(position[i, j].ToString() + " | ");
                 }
-                    Debug.Write("\n");
+                Debug.Write("\n");
             }
-                Debug.Write("   | ");
+            Debug.Write("   | ");
             for (int k = 0; k <= 7; k++)
             {
-                    Debug.Write((char)(97 + k) + " | ");
+                Debug.Write((char)(97 + k) + " | ");
             }
 
         }
 
         private void writeChessboardToDEBUGChar(char[,] position, bool takePiece, string castling, string promotion)
         {
-                Debug.Write("\n\n");
+            Debug.Write("\n\n");
 
             for (int i = position.GetLength(0) - 1; i >= 0; i--)
             {
-                    Debug.Write(i + 1 + " ");    
+                Debug.Write(i + 1 + " ");
 
                 for (int j = 0; j < position.GetLength(1); j++)
                 {
-  
-                        if (j == 0)
-                        {
-                            if (position[i, j] == ' ')
-                                Debug.Write("  |  " + position[i, j].ToString() + "  |  ");
-                            else
-                                Debug.Write("  |  " + position[i, j].ToString() + "  |  ");
 
-                        }
+                    if (j == 0)
+                    {
+                        if (position[i, j] == ' ')
+                            Debug.Write("  |  " + position[i, j].ToString() + "  |  ");
                         else
-                        {
-                            if (position[i, j] == ' ')
-                                Debug.Write(position[i, j].ToString() + "  |  ");
-                            else
-                                Debug.Write(position[i, j].ToString() + "  |  ");
-                        }
+                            Debug.Write("  |  " + position[i, j].ToString() + "  |  ");
+
+                    }
+                    else
+                    {
+                        if (position[i, j] == ' ')
+                            Debug.Write(position[i, j].ToString() + "  |  ");
+                        else
+                            Debug.Write(position[i, j].ToString() + "  |  ");
+                    }
                 }
-                    Debug.Write("\n");
+                Debug.Write("\n");
             }
 
-                Debug.Write("\n       ");
+            Debug.Write("\n       ");
 
             for (int k = 0; k <= 7; k++)
-            { 
-                    Debug.Write((char)(97 + k) + "     ");
-            }
-
-
-                Debug.Write("\n\nCapture piece = " + takePiece);
-    
-                Debug.Write("\n\nCastling = " + castling);
-
-                Debug.Write("\n\nPromotion = " + promotion);
-       
-        }
-
-
-        /*
-        private void SendCommandToRobot(object obj)
-        {
-
-            //declare a variable of data type RapidDomain.Bool
-            ABB.Robotics.Controllers.RapidDomain.Bool rapidBool;
-            ABB.Robotics.Controllers.RapidDomain.Num rapidNum;
-
-            //Make a variable that is connected to the variable in the robotcontroller 
-            ABB.Robotics.Controllers.RapidDomain.RapidData rd = controller.Rapid.GetRapidData("T_ROB1", "stableSnus", "flag");
-            ABB.Robotics.Controllers.RapidDomain.RapidData x_1 = controller.Rapid.GetRapidData("T_ROB1", "stableSnus", "x_1");
-
-
-            while (true)
             {
-                // Wait for new koordinates for robot
-                ewhSendCommandToRobot.WaitOne();
-
-                //test that data type is correct before cast
-                if (rd.Value is ABB.Robotics.Controllers.RapidDomain.Bool)
-                {
-                    // Read the current value from the robotcontroller
-                    rapidBool = (ABB.Robotics.Controllers.RapidDomain.Bool)rd.Value;
-                    rapidNum = (ABB.Robotics.Controllers.RapidDomain.Num)x_1.Value;
-
-                    //assign the value of the RAPID data to a local variable
-                    bool boolValue = rapidBool.Value;
-                    int numValue = (int)rapidNum.Value;
-
-                    // New values to be written to the robotcontroller
-                    rapidBool.Value = true;
-                    rapidNum.Value = 8;
-
-                    //Request mastership of Rapid before writing to the controller
-                    master = Mastership.Request(controller.Rapid);
-                    //Change: controller is repaced by aController
-                    rd.Value = rapidBool;
-                    x_1.Value = rapidNum;
-                    //Release mastership as soon as possible
-                    master.ReleaseOnDispose = true;
-                    master.Dispose();
-                }
+                Debug.Write((char)(97 + k) + "     ");
             }
+
+
+            Debug.Write("\n\nCapture piece = " + takePiece);
+
+            Debug.Write("\n\nCastling = " + castling);
+
+            Debug.Write("\n\nPromotion = " + promotion);
+
         }
-        */
+
+
 
         public class ControllerInformationItems
         {
@@ -779,12 +725,19 @@ namespace SjakkGUI
         private void lstControllerInformation_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
 
-            
+
         }
 
-        private void btnStartRAPID_Click(object sender, RoutedEventArgs e)
+        private void btnBrownChessboard_Click(object sender, RoutedEventArgs e)
         {
-            ewhSendCommandToRobot.Set();
+            Brush firstBrush = Brushes.SandyBrown;
+            Brush secondBrush = Brushes.SaddleBrown;
+            movedFromToBrush = Brushes.LightGoldenrodYellow;
+
+            cbChessBoardStyleColorLeftSide.Color = Colors.SandyBrown;
+            cbChessBoardStyleColorRightSide.Color = Colors.SaddleBrown;
+
+            ColorChessboard(firstBrush, secondBrush);
         }
 
         private void btnRedChessboard_Click(object sender, RoutedEventArgs e)
@@ -795,7 +748,7 @@ namespace SjakkGUI
 
             cbChessBoardStyleColorLeftSide.Color = Colors.Red;
             cbChessBoardStyleColorRightSide.Color = Colors.DarkRed;
-         
+
             ColorChessboard(firstBrush, secondBrush);
         }
 
@@ -1026,10 +979,28 @@ namespace SjakkGUI
             oldToBrush = null;
             oldFromBrush = null;
 
+            List<Border> borders = new List<Border>();
+
             // Set up start position
-            foreach (Border border in gridChessboard.Children)
+            foreach (var child in gridChessboard.Children)
             {
-                border.Child = null;
+                if (child != null)
+                {
+                    if (child.GetType().Name == "Border")
+                    {
+                        borders.Add((Border)child);
+                    }
+                }
+            }
+
+            
+            foreach (Border border in borders)
+            {    
+                if (border.Child != null)
+                {
+                    if (border.Child.GetType().Name != "Label")
+                        border.Child = null;
+                }
             }
 
             Border_a8.Child = ImagebrLeft;
@@ -1039,34 +1010,88 @@ namespace SjakkGUI
             Border_e8.Child = Imagebk;
             Border_f8.Child = ImagebbRight;
             Border_g8.Child = ImagebnRight;
-            Border_h8.Child = ImagebrRight;              
-            Border_a7.Child = Imagebp_1;              
-            Border_b7.Child = Imagebp_2;             
-            Border_c7.Child = Imagebp_3;              
-            Border_d7.Child = Imagebp_4;              
-            Border_e7.Child = Imagebp_5;              
-            Border_f7.Child = Imagebp_6;              
+            Border_h8.Child = ImagebrRight;
+            Border_a7.Child = Imagebp_1;
+            Border_b7.Child = Imagebp_2;
+            Border_c7.Child = Imagebp_3;
+            Border_d7.Child = Imagebp_4;
+            Border_e7.Child = Imagebp_5;
+            Border_f7.Child = Imagebp_6;
             Border_g7.Child = Imagebp_7;
-            Border_h7.Child = Imagebp_8;              
-            Border_a2.Child = Imagewp_1;                 
-            Border_b2.Child = Imagewp_2;              
-            Border_c2.Child = Imagewp_3;              
-            Border_d2.Child = Imagewp_4;              
-            Border_e2.Child = Imagewp_5;              
-            Border_f2.Child = Imagewp_6;              
-            Border_g2.Child = Imagewp_7;              
-            Border_h2.Child = Imagewp_8;            
-            Border_a1.Child = ImagewrLeft;            
-            Border_b1.Child = ImagewnLeft;              
-            Border_c1.Child = ImagewbLeft;              
-            Border_d1.Child = Imagewq;               
-            Border_e1.Child = Imagewk;              
-            Border_f1.Child = ImagewbRight;              
+            Border_h7.Child = Imagebp_8;
+            Border_a2.Child = Imagewp_1;
+            Border_b2.Child = Imagewp_2;
+            Border_c2.Child = Imagewp_3;
+            Border_d2.Child = Imagewp_4;
+            Border_e2.Child = Imagewp_5;
+            Border_f2.Child = Imagewp_6;
+            Border_g2.Child = Imagewp_7;
+            Border_h2.Child = Imagewp_8;
+            Border_a1.Child = ImagewrLeft;
+            Border_b1.Child = ImagewnLeft;
+            Border_c1.Child = ImagewbLeft;
+            Border_d1.Child = Imagewq;
+            Border_e1.Child = Imagewk;
+            Border_f1.Child = ImagewbRight;
             Border_g1.Child = ImagewnRight;
-            Border_h1.Child = ImagewrRight;              
-                                            
+            Border_h1.Child = ImagewrRight;
+
 
         }
+
+        private void btnFullscreen_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindowWindow.MaxHeight = 10000;
+            MainWindowWindow.MaxWidth = 10000;
+
+            MainWindowWindow.WindowStyle = System.Windows.WindowStyle.None;
+            MainWindowWindow.WindowState = System.Windows.WindowState.Maximized;
+
+            btnFullscreen.Visibility = Visibility.Hidden;
+            btnNewGame.Visibility = Visibility.Hidden;
+            //btnSend.Visibility = Visibility.Hidden;
+            //tbNextMove.Visibility = Visibility.Hidden;
+            cbChessboardStyle.Visibility = Visibility.Hidden;
+            cbDepth.Visibility = Visibility.Hidden;
+            cbSkillLevel.Visibility = Visibility.Hidden;
+            lblHumanRobotTurn.Visibility = Visibility.Hidden;
+            lblShowMode.Visibility = Visibility.Hidden;
+            lblMode.Visibility = Visibility.Hidden;
+            lblSkillLevel.Visibility = Visibility.Hidden;
+            lblDepth.Visibility = Visibility.Hidden;
+            lstControllerInformation.Visibility = Visibility.Hidden;
+
+           // gridChessboard.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+
+           
+        }
+
+        void MainWindowWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                MainWindowWindow.MaxHeight = 750;
+                MainWindowWindow.MaxWidth = 1200;
+                MainWindowWindow.WindowStyle = System.Windows.WindowStyle.ToolWindow;
+                MainWindowWindow.WindowState = System.Windows.WindowState.Normal;
+
+                btnFullscreen.Visibility = Visibility.Visible;
+                btnNewGame.Visibility = Visibility.Visible;
+                btnSend.Visibility = Visibility.Visible;
+                tbNextMove.Visibility = Visibility.Visible;
+                cbChessboardStyle.Visibility = Visibility.Visible;
+                cbDepth.Visibility = Visibility.Visible;
+                cbSkillLevel.Visibility = Visibility.Visible;
+                lblHumanRobotTurn.Visibility = Visibility.Visible;
+                lblShowMode.Visibility = Visibility.Visible;
+                lblMode.Visibility = Visibility.Visible;
+                lblSkillLevel.Visibility = Visibility.Visible;
+                lblDepth.Visibility = Visibility.Visible;
+                lstControllerInformation.Visibility = Visibility.Visible;
+            }
+        }
+
+ 
 
     }// MainWindow
 }

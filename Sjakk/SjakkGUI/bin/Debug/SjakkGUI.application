@@ -7,14 +7,14 @@
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="SjakkGUI.exe.manifest" size="5815">
+    <dependentAssembly dependencyType="install" codebase="SjakkGUI.exe.manifest" size="4682">
       <assemblyIdentity name="SjakkGUI.exe" version="1.0.0.4" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>AFKm+nl7rY23+6KVdXXWp+lP/6eE+J56bUbHBwzyQnI=</dsig:DigestValue>
+        <dsig:DigestValue>cQ3rk0iOjVF5RnixsRsWyds5U/uUbQHc4DWF+JATwiw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
