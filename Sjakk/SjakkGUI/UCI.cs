@@ -35,6 +35,11 @@ namespace SjakkGUI
                                            { 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 },
                                            { 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 }};
 
+        public int[,] ChessboardInt
+        {
+            get { return chessboardInt; }
+        }
+
         char[,] chessboardChar = new char[8, 8] {{ 'r' , 'n' , 'b' , 'q' , 'k' , 'b' , 'n' , 'r' },
                                                  { 'p' , 'p' , 'p' , 'p' , 'p' , 'p' , 'p' , 'p' },
  				                                 { ' ' , ' ' , ' ' , ' ' , ' ' , ' ' , ' ' , ' ' },

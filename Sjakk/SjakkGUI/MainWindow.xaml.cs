@@ -51,7 +51,7 @@ namespace SjakkGUI
         // For communicating with Scorpion Vision 
         SerialPort sPort;
         static string visionSystemInData = string.Empty;
-
+        static string humanMoveFromScorpion = string.Empty;
 
         static string sysID = string.Empty;
         static NetworkScanner scanner;
@@ -69,7 +69,7 @@ namespace SjakkGUI
         static Storyboard myStoryboard;
 
         // The virtual COM port used with Scorpion Vision
-        static string virtualCOM = "COM7";
+        static string virtualCOM = "COM24";
 
         public MainWindow()
         {
@@ -80,7 +80,7 @@ namespace SjakkGUI
 
             // Setup for the COM port. Is used to communicate with Scorpion Vision System
 
-#if(!DEBUG)
+#if(DEBUG)
                 string[] ports = SerialPort.GetPortNames();
 
                 if (ports.Contains(virtualCOM))
@@ -91,7 +91,7 @@ namespace SjakkGUI
                 }
                 else
                 {
-                    MessageBox.Show("Could not find " + virtualCOM + ". This is the virtual COM port used to connect with Scorpion Vision System. To set up a virtual COM use comcom");
+                    MessageBox.Show("Could not find " + virtualCOM + ". This is the virtual COM port used to connect with Scorpion Vision System. To set up a virtual COM use com0com");
                 }
 #endif
 
@@ -138,6 +138,7 @@ namespace SjakkGUI
 
 
             MainWindowWindow.KeyDown += MainWindowWindow_KeyDown;
+
         }
 
         private void ColorChessboard(Brush firstBrush, Brush secondBrush)
@@ -319,75 +320,152 @@ namespace SjakkGUI
             {
                 ewhChessWork.WaitOne();
 
-                if (robot)
+                // For testing
+                if (true)
                 {
-                    // The best move the robot can make
-                    move = myChessEngine.BestMove;
-                    // Sends in the move to the UCI object. Gets out coordinates to be sent to robotcontroller
-                    myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, out promotion, move, robot);
-
-
-                    myChessEngine.EngineCommandMove(move);
-
-                    // Wait for calculations to finish
-                    myChessEngine.ewhCalculating.WaitOne();
-
-
-                    double scoreFormated = 0.5 + Convert.ToDouble(myChessEngine.Score) / 2000; // Max 10 pawns
-
-
-                    this.Dispatcher.Invoke((Action)(() =>
+                    if (false)
                     {
-                        lblBlackScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1) / 100);
-                        lblWhiteScore.Content = string.Format("{0:F1}", Convert.ToDouble(myChessEngine.Score) / 100);
+                        // The best move the robot can make
+                        move = myChessEngine.BestMove;
+                        // Sends in the move to the UCI object. Gets out coordinates to be sent to robotcontroller
+                        myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, out promotion, move, robot);
 
-                        Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + scoreFormated);
-                        tbNextMove.Text = myChessEngine.BestMove;
 
-                        lblHumanRobotTurn.Content = "Human";
+                        myChessEngine.EngineCommandMove(move);
 
-                        ScoreAnimation(scoreFormated);
+                        // Wait for calculations to finish
+                        myChessEngine.ewhCalculating.WaitOne();
 
-                    }));
-                    robot = false;
+
+                        double scoreFormated = 0.5 + Convert.ToDouble(myChessEngine.Score) / 2000; // Max 10 pawns
+
+
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            lblBlackScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1) / 100);
+                            lblWhiteScore.Content = string.Format("{0:F1}", Convert.ToDouble(myChessEngine.Score) / 100);
+
+                            Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + scoreFormated);
+                            tbNextMove.Text = myChessEngine.BestMove;
+
+                            lblHumanRobotTurn.Content = "Human";
+
+                            ScoreAnimation(scoreFormated);
+
+                        }));
+                        robot = false;
+                    }
+                    else
+                    {
+                        move = humanMoveFromScorpion;
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            // Takes in the move from the human player
+                            myChessEngine.EngineCommandMove(move);
+                        }));
+
+                        // Wait for calculations to finish
+                        myChessEngine.ewhCalculating.WaitOne();
+
+
+                        // Lag metode av denne biten
+
+                        // Get score
+                        double scoreFormated = 0.5 + (Convert.ToDouble(myChessEngine.Score) * -1) / 2000; // max score 10 pawns
+
+
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            lblBlackScore.Content = string.Format("{0:F1}", Convert.ToDouble(myChessEngine.Score) / 100);
+                            lblWhiteScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1) / 100);
+
+                            Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + scoreFormated);
+                            //tbNextMove.Text = myChessEngine.BestMove;
+                            tbNextMove.Clear();
+
+                            ScoreAnimation(scoreFormated);
+
+                            lblHumanRobotTurn.Content = "Robot";
+                        }));
+
+                        // Coordinates to be sent to robotcontroller
+                        myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, out promotion, move, robot);
+
+                        robot = true;
+                    }
                 }
                 else
                 {
-                    this.Dispatcher.Invoke((Action)(() =>
+                    if (robot)
                     {
-                        // Takes in the move from the human player
-                        move = tbNextMove.Text;
+                        // The best move the robot can make
+                        move = myChessEngine.BestMove;
+                        // Sends in the move to the UCI object. Gets out coordinates to be sent to robotcontroller
+                        myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, out promotion, move, robot);
+
+
                         myChessEngine.EngineCommandMove(move);
-                    }));
 
-                    // Wait for calculations to finish
-                    myChessEngine.ewhCalculating.WaitOne();
-
-
-                    // Lag metode av denne biten
-
-                    // Get score
-                    double scoreFormated = 0.5 + (Convert.ToDouble(myChessEngine.Score) * -1) / 2000; // max score 10 pawns
+                        // Wait for calculations to finish
+                        myChessEngine.ewhCalculating.WaitOne();
 
 
-                    this.Dispatcher.Invoke((Action)(() =>
+                        double scoreFormated = 0.5 + Convert.ToDouble(myChessEngine.Score) / 2000; // Max 10 pawns
+
+
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            lblBlackScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1) / 100);
+                            lblWhiteScore.Content = string.Format("{0:F1}", Convert.ToDouble(myChessEngine.Score) / 100);
+
+                            Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + scoreFormated);
+                            tbNextMove.Text = myChessEngine.BestMove;
+
+                            lblHumanRobotTurn.Content = "Human";
+
+                            ScoreAnimation(scoreFormated);
+
+                        }));
+                        robot = false;
+                    }
+                    else
                     {
-                        lblBlackScore.Content = string.Format("{0:F1}", Convert.ToDouble(myChessEngine.Score) / 100);
-                        lblWhiteScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1) / 100);
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            // Takes in the move from the human player
+                            move = tbNextMove.Text;
+                            myChessEngine.EngineCommandMove(move);
+                        }));
 
-                        Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + scoreFormated);
-                        //tbNextMove.Text = myChessEngine.BestMove;
-                        tbNextMove.Clear();
+                        // Wait for calculations to finish
+                        myChessEngine.ewhCalculating.WaitOne();
 
-                        ScoreAnimation(scoreFormated);
 
-                        lblHumanRobotTurn.Content = "Robot";
-                    }));
+                        // Lag metode av denne biten
 
-                    // Coordinates to be sent to robotcontroller
-                    myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, out promotion, move, robot);
+                        // Get score
+                        double scoreFormated = 0.5 + (Convert.ToDouble(myChessEngine.Score) * -1) / 2000; // max score 10 pawns
 
-                    robot = true;
+
+                        this.Dispatcher.Invoke((Action)(() =>
+                        {
+                            lblBlackScore.Content = string.Format("{0:F1}", Convert.ToDouble(myChessEngine.Score) / 100);
+                            lblWhiteScore.Content = string.Format("{0:F1}", (Convert.ToDouble(myChessEngine.Score) * -1) / 100);
+
+                            Debug.Write("Tidligere trekk: " + myChessEngine.EarlierMoves + "\n" + "Beste trekk: " + myChessEngine.BestMove + "\nStilling: " + myChessEngine.Score + " Score: " + scoreFormated);
+                            //tbNextMove.Text = myChessEngine.BestMove;
+                            tbNextMove.Clear();
+
+                            ScoreAnimation(scoreFormated);
+
+                            lblHumanRobotTurn.Content = "Robot";
+                        }));
+
+                        // Coordinates to be sent to robotcontroller
+                        myChessEngine.decodingChessMoveToCoordinates(out x1, out y1, out x2, out y2, out x3, out y3, out takePiece, out positionInt, out positionChar, out castling, out enPassant, out promotion, move, robot);
+
+                        robot = true;
+                    }
                 }
 
 #if (DEBUG)
@@ -788,12 +866,6 @@ namespace SjakkGUI
             ColorChessboard(firstBrush, secondBrush);
         }
 
-        private void sPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            SerialPort sp = (SerialPort)sender;
-            visionSystemInData = sp.ReadExisting();
-        }
-
         void cbDepth_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int caseSwitch = cbDepth.SelectedIndex;
@@ -1091,7 +1163,102 @@ namespace SjakkGUI
             }
         }
 
- 
+        private void sPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            SerialPort sp = (SerialPort)sender;
+            visionSystemInData = sp.ReadExisting();
+            List<int> axisValues = new List<int>();
+
+
+                while (Regex.IsMatch(visionSystemInData,@"\d{1,3}(?=\.)"))
+                {
+                    Match match = Regex.Match(visionSystemInData, @"\d{1,3}(?=\.)");
+                    axisValues.Add(Convert.ToInt16(match.Value));
+                    visionSystemInData = visionSystemInData.Remove(match.Index, match.Length);
+                }
+
+                string Move = "";
+
+
+            for (int i = 0; i < 3; i += 2)
+            {
+                int x_value = axisValues[i];
+                int y_value = axisValues[i + 1];
+
+                if (x_value > 4 && x_value < 47)
+                {
+                    Move += "a";
+                }
+                else if (x_value > 47 && x_value < 90)
+                {
+                    Move += "b";
+                }
+                else if (x_value > 90 && x_value < 133)
+                {
+                    Move += "c";
+                }
+                else if (x_value > 133 && x_value < 176)
+                {
+                    Move += "d";
+                }
+                else if (x_value > 176 && x_value < 220)
+                {
+                    Move += "e";
+                }
+                else if (x_value > 220 && x_value < 263)
+                {
+                    Move += "f";
+                }
+                else if (x_value > 263 && x_value < 304)
+                {
+                    Move += "g";
+                }
+                else if (x_value > 304 && x_value < 350)
+                {
+                    Move += "h";
+                }
+
+
+                if (y_value > 4 && y_value < 47)
+                {
+                    Move += "1";
+                }
+                else if (y_value > 47 && y_value < 90)
+                {
+                    Move += "2";
+                }
+                else if (y_value > 90 && y_value < 133)
+                {
+                    Move += "3";
+                }
+                else if (y_value > 133 && y_value < 176)
+                {
+                    Move += "4";
+                }
+                else if (y_value > 176 && y_value < 220)
+                {
+                    Move += "5";
+                }
+                else if (y_value > 220 && y_value < 263)
+                {
+                    Move += "6";
+                }
+                else if (y_value > 263 && y_value < 304)
+                {
+                    Move += "7";
+                }
+                else if (y_value > 304 && y_value < 350)
+                {
+                    Move += "8";
+                }
+
+            }
+
+            Debug.WriteLine(Move);
+            humanMoveFromScorpion = Move;
+            ewhChessWork.Set();
+          
+        }
 
     }// MainWindow
 }
