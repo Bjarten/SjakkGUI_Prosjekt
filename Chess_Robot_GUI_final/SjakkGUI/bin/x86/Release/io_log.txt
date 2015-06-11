@@ -1,0 +1,46 @@
+>> stop
+>> ucinewgame
+>> setoption name Skill Level value 0
+>> setoption name Skill Level value 20
+>> position startpos moves e2e4
+>> go depth 1
+<< info depth 1 seldepth 1 score cp -2 nodes 45 nps 45000 time 1 multipv 1 pv d7d5
+<< info nodes 45 time 1
+<< bestmove d7d5 ponder (none)
+>> position startpos moves e2e4
+>> go depth 4
+<< info depth 1 seldepth 1 score cp -2 nodes 26 nps 26000 time 1 multipv 1 pv d7d5
+<< info depth 2 seldepth 2 score cp -60 nodes 167 nps 167000 time 1 multipv 1 pv d7d5 b1c3
+<< info depth 3 seldepth 3 score cp -10 nodes 451 nps 451000 time 1 multipv 1 pv d7d5 b1c3 g8f6
+<< info depth 4 seldepth 4 score cp -17 nodes 842 nps 842000 time 1 multipv 1 pv d7d5 b1c3 g8f6 f2f3
+<< info nodes 842 time 1
+<< bestmove d7d5 ponder b1c3
+>> position startpos moves e2e4 d7d5
+>> go depth 4
+<< info depth 1 seldepth 1 score cp 17 nodes 55 nps 55000 time 1 multipv 1 pv b1c3 g8f6 f2f3
+<< info depth 2 seldepth 2 score cp 17 nodes 96 nps 96000 time 1 multipv 1 pv b1c3 g8f6 f2f3
+<< info depth 3 seldepth 3 score cp 17 nodes 270 nps 270000 time 1 multipv 1 pv b1c3 g8f6 f2f3
+<< info depth 4 seldepth 5 score cp 5 nodes 2162 nps 2162000 time 1 multipv 1 pv b1c3 g8f6 e4d5 f6d5
+<< info nodes 2162 time 1
+<< bestmove b1c3 ponder g8f6
+>> position startpos moves e2e4 d7d5 g1f3
+>> go depth 1
+<< info depth 1 seldepth 1 score cp 55 nodes 46 nps 46000 time 1 multipv 1 pv d5e4
+<< info nodes 46 time 1
+<< bestmove d5e4 ponder (none)
+>> position startpos moves e2e4 d7d5 g1f3
+>> go depth 4
+<< info depth 1 seldepth 1 score cp 55 nodes 32 nps 32000 time 1 multipv 1 pv d5e4
+<< info depth 2 seldepth 2 score cp 44 nodes 231 nps 231000 time 1 multipv 1 pv d5e4 f3e5
+<< info depth 3 seldepth 3 score cp 98 nodes 547 nps 547000 time 1 multipv 1 pv d5e4 f3e5 g8f6
+<< info depth 4 seldepth 4 score cp 40 nodes 952 nps 952000 time 1 multipv 1 pv d5e4 f3e5 g8f6 b1c3
+<< info nodes 952 time 1
+<< bestmove d5e4 ponder f3e5
+>> position startpos moves e2e4 d7d5 g1f3 d5e4
+>> go depth 4
+<< info depth 1 seldepth 1 score cp -40 nodes 64 nps 64000 time 1 multipv 1 pv f3e5 g8f6 b1c3
+<< info depth 2 seldepth 2 score cp -40 nodes 98 nps 98000 time 1 multipv 1 pv f3e5 g8f6 b1c3
+<< info depth 3 seldepth 2 score cp -40 nodes 131 nps 131000 time 1 multipv 1 pv f3e5 g8f6 b1c3
+<< info depth 4 seldepth 4 score cp -100 nodes 2038 nps 2038000 time 1 multipv 1 pv f3g5 g8f6 b1c3 c8g4
+<< info nodes 2038 time 1
+<< bestmove f3g5 ponder g8f6
